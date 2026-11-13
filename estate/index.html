@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUMIST Estate</title>
+<meta name="description" content="Bubble wine for introverts, from 2750 Las Amigas Road in Carneros, Napa. The estate from wide to close: region, weather, the marsh next door, our history since 1979, down to a single bubble.">
+<meta property="og:title" content="The LUMIST Estate — Carneros, Napa &amp; Sonoma">
+<meta property="og:description" content="Start wide. End in the bottle. Bubble wine from both sides of Carneros.">
+<meta property="og:url" content="https://lumist.wine/estate/">
+<link rel="canonical" href="https://lumist.wine/estate/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23212121'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23ECECEC' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a zoom. Five scales, each section frames the next with a dashed "zoom box", from the bay region down to one bubble. */
+:root{
+  --mist:#ECECEC; --paper:#F6F6F6; --ink:#212121; --muted:#626262; --gold:#747474; --line:#D1D1D1;
+  --napa:#828282; --sonoma:#878787; --bay:#4D4D4D; --fog:#C9C9C9;
+  --display:"IM Fell English","EB Garamond",Georgia,serif;
+  --sc:"IM Fell English SC","IM Fell English",Georgia,serif;
+  --body:"EB Garamond",Garamond,Georgia,serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--mist);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+svg,canvas{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-weight:400;text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.btn{display:inline-flex;align-items:center;font:600 14px/1 var(--body);letter-spacing:.06em;padding:15px 24px;border-radius:0;border:1px solid var(--ink);background:var(--ink);color:var(--paper);text-decoration:none;transition:background .2s,color .2s}
+.btn:hover{background:transparent;color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink)} .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+.skip{position:absolute;left:-999px} .skip:focus{left:16px;top:12px;z-index:50;background:var(--paper);padding:8px 12px}
+.tbc{display:inline-block;justify-self:start;width:max-content;max-width:100%;font-size:13px;color:var(--gold);border:1px dashed var(--gold);border-radius:0;padding:2px 8px;line-height:1.5;font-weight:500}
+
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--mist) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;height:64px}
+.logo{font-family:var(--display);font-size:26px;letter-spacing:.32em;margin-right:-.32em;text-decoration:none;justify-self:center}
+.discover{position:relative;justify-self:start}
+.disc-btn{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;font:500 14px var(--body);letter-spacing:.08em;color:var(--ink);padding:8px 0;cursor:pointer}
+.disc-btn svg{transition:transform .2s}
+.disc-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.disc-menu{position:absolute;top:calc(100% + 12px);left:-12px;min-width:200px;list-style:none;margin:0;padding:8px;background:var(--paper);border:1px solid var(--line);border-radius:0;box-shadow:0 12px 32px rgba(33,33,33,.12)}
+.disc-menu a{display:block;padding:10px 12px;text-decoration:none;font-size:15px;border-radius:0}
+.disc-menu a:hover{background:var(--mist)}
+.disc-menu a[aria-current]{color:var(--gold)}
+.icons{justify-self:end;display:flex;gap:6px}
+.icon{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--ink)}
+.icon:hover{background:var(--paper)}
+@media (max-width:480px){.logo{font-size:21px;letter-spacing:.24em;margin-right:-.24em}.disc-btn{font-size:13px}.icons{gap:0}.disc-menu{left:-4px}}
+
+/* zoom rail */
+.rail{position:fixed;right:clamp(12px,2vw,28px);top:50%;transform:translateY(-50%);z-index:25;display:grid;gap:4px;list-style:none;margin:0;padding:10px 0}
+.rail a{display:grid;grid-template-columns:auto 14px;align-items:center;gap:10px;justify-items:end;text-decoration:none;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:5px 0}
+.rail a span{opacity:.55;transition:opacity .2s}
+.rail a i{width:7px;height:7px;border-radius:50%;border:1px solid var(--muted);justify-self:center;transition:all .2s}
+.rail a[aria-current="step"] span{opacity:1;color:var(--ink);font-weight:600}
+.rail a[aria-current="step"] i{width:13px;height:13px;background:var(--gold);border-color:var(--gold)}
+.rail.dark a{color:#A3A3A3} .rail.dark a[aria-current="step"] span{color:var(--paper)}
+@media (max-width:1360px){.rail{display:none}}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:var(--ink);color:var(--paper)}
+#fog{position:absolute;inset:0;width:100%;height:100%}
+.hero .wrap{position:relative;padding-top:clamp(72px,10vw,120px);padding-bottom:clamp(56px,8vw,96px)}
+.hero h1{font-family:var(--display);font-size:clamp(36px,5vw,64px);line-height:1.05;margin:18px 0 0}
+.hero .motto{margin-top:16px;font-family:var(--display);font-size:clamp(20px,2vw,26px);color:#B4B4B4}
+.hero .lead{font-size:clamp(16px,1.4vw,18px);color:var(--fog);max-width:36em;margin-top:28px}
+.scalebar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 0;margin-top:48px;max-width:860px}
+.scalebar div{flex:1 0 96px;border-left:1px solid #696969;padding:0 0 0 10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#A3A3A3}
+.scalebar div b{display:block;font-family:var(--display);font-size:17px;letter-spacing:0;text-transform:none;color:var(--paper);font-weight:400;font-variant-numeric:tabular-nums}
+.scalebar div{height:calc(84px - var(--i)*8px)}.scalebar div:last-child{border-color:#B4B4B4}
+
+/* level sections */
+.level{padding:clamp(72px,9vw,112px) 0;border-top:1px solid var(--line);scroll-margin-top:64px}
+.level.dark{background:var(--ink);color:var(--paper);border-color:#343434}
+.level.paper{background:var(--paper)}
+.lv-head{display:grid;grid-template-columns:200px 1fr;gap:24px 48px;margin-bottom:48px}
+.scale{font-family:var(--display);font-size:clamp(24px,2.2vw,30px);line-height:1;font-variant-numeric:tabular-nums;color:var(--gold)}
+.dark .scale{color:#B4B4B4}
+.scale small{display:block;font-family:var(--body);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+.dark .scale small{color:#A3A3A3}
+.lv-head h2{font-family:var(--display);font-size:clamp(28px,3vw,40px);line-height:1.12}
+.lv-head .intro{margin-top:16px;font-size:17px;color:var(--muted);max-width:38em}
+.dark .lv-head .intro{color:var(--fog)}
+@media (max-width:760px){.lv-head{grid-template-columns:1fr}}
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,64px);align-items:center}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+.figure{margin:0;border-radius:0;overflow:hidden}
+.figure figcaption{font-size:12px;color:var(--muted);margin-top:10px}
+.dark .figure figcaption{color:#A3A3A3}
+.notes{display:grid;gap:18px;color:var(--muted)}
+.dark .notes{color:var(--fog)}
+.notes p strong{color:var(--ink);font-weight:600}
+.dark .notes p strong{color:var(--paper)}
+.zoomnext{display:inline-flex;align-items:center;gap:10px;margin-top:8px;font-size:13px;font-weight:600;letter-spacing:.08em;text-decoration:none;color:var(--gold)}
+.dark .zoomnext{color:#B4B4B4}
+.zoomnext::before{content:"";width:14px;height:14px;border:1px dashed currentColor}
+
+/* napa vs sonoma */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin-top:56px;border-top:1px solid #424242}
+.side{padding:28px 28px 8px 0;display:grid;gap:14px;align-content:start}
+.side+.mid+.side{padding:28px 0 8px 28px}
+.mid{display:grid;place-items:start center;padding-top:30px;font-family:var(--display);font-size:28px;color:#696969;border-left:1px solid #424242;border-right:1px solid #424242;width:72px}
+.side h3{font-family:var(--display);font-size:30px;line-height:1;display:flex;align-items:center;gap:14px}
+.side h3 i{width:12px;height:12px;border-radius:50%;background:var(--c)}
+.side .role{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#B4B4B4;font-weight:600}
+.side p{color:var(--fog)}
+.side dl{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:6px 0 0;font-size:14px}
+.side dt{color:#A3A3A3} .side dd{margin:0;color:var(--paper)}
+@media (max-width:760px){.vs{grid-template-columns:1fr}.mid{width:auto;border:0;border-top:1px solid #424242;padding:12px 0;place-items:center}.side+.mid+.side{padding:0 0 8px}}
+
+/* estate two sites */
+.sites{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:40px}
+.site{background:var(--mist);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:0;padding:26px;display:grid;gap:12px;align-content:start}
+.site .role{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.site h3{font-family:var(--display);font-size:26px;line-height:1.05}
+.site p{color:var(--muted)}
+.site ul{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:8px;font-size:14px}
+.site li{display:grid;grid-template-columns:110px 1fr;gap:12px;border-top:1px solid var(--line);padding-top:8px}
+.site li span:first-child{color:var(--muted)}
+@media (max-width:760px){.sites{grid-template-columns:1fr}}
+
+/* row */
+.rowfacts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);margin-top:48px}
+.rowfacts div{padding:20px 20px 0 0;display:grid;gap:6px;align-content:start}
+.rowfacts div+div{padding-left:20px;border-left:1px solid var(--line)}
+.rowfacts dt{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.rowfacts dd{margin:0;font-size:18px}
+@media (max-width:760px){.rowfacts{grid-template-columns:1fr 1fr}.rowfacts div:nth-child(3){padding-left:0;border-left:0}.rowfacts div:nth-child(n+3){margin-top:16px}}
+
+/* bubble */
+.bubble-sec{position:relative;overflow:hidden}
+#inbottle{width:100%;height:auto;aspect-ratio:4/5;max-height:560px;border-radius:0;background:radial-gradient(ellipse at 50% 30%,#343434 0%,#191919 75%)}
+.manifesto{font-family:var(--display);font-size:clamp(24px,2.6vw,34px);line-height:1.1;color:var(--paper)}
+.words{display:grid;grid-template-columns:auto 1fr;gap:12px 22px;margin-top:28px;font-size:15px;color:var(--fog)}
+.words dt{font-family:var(--display);font-size:22px;color:#B4B4B4;line-height:1.3}
+.words dd{margin:0}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
+.dark .btn{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.dark .btn:hover{background:transparent;color:var(--paper)}
+.dark .btn.ghost{background:transparent;color:var(--paper)}
+.dark .btn.ghost:hover{background:var(--paper);color:var(--ink)}
+
+/* weather */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink)}
+.tile{padding:22px 22px 24px 0;display:grid;gap:4px;align-content:start}
+.tile+.tile{padding-left:22px;border-left:1px solid var(--line)}
+.tile b{font-family:var(--display);font-size:clamp(30px,3vw,40px);font-weight:400;line-height:1.05;font-variant-numeric:tabular-nums}
+.tile span{font-size:14px;color:var(--muted)}
+@media (max-width:820px){.tiles{grid-template-columns:1fr 1fr}.tile:nth-child(3){padding-left:0;border-left:0}.tile:nth-child(n+3){border-top:1px solid var(--line)}}
+.year{margin-top:48px}
+.year h3,.dayrow-h{font-size:15px;font-weight:600;font-family:var(--body);margin-bottom:12px}
+.year svg{width:100%;height:auto}
+.dayrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+.dayrow div{border-radius:0;padding:16px;display:grid;gap:6px;min-height:150px;align-content:end}
+.dayrow time{font-family:var(--display);font-size:24px;font-variant-numeric:tabular-nums}
+.dayrow b{font-size:15px}
+.dayrow p{font-size:14px}
+@media (max-width:760px){.dayrow{grid-template-columns:1fr 1fr}}
+.src{font-size:12px;color:var(--muted);margin-top:20px}
+.dark .src{color:#A3A3A3}
+/* marsh */
+.species{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:48px}
+.sp{background:var(--paper);border:1px solid var(--line);border-radius:0;padding:18px;display:grid;gap:8px;align-content:start}
+.sp svg{height:56px;width:auto}
+.sp h3{font-family:var(--display);font-size:24px;line-height:1.1}
+.sp p{font-size:14px;color:var(--muted)}
+.sp .when{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+@media (max-width:900px){.species{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.species{grid-template-columns:1fr}}
+/* address */
+.addr{display:flex;flex-wrap:wrap;gap:12px 40px;margin:0 0 32px;padding:18px 22px;border:1px solid var(--line);border-left:4px solid var(--napa);background:var(--mist);border-radius:0;font-variant-numeric:tabular-nums}
+.addr div{display:grid;gap:2px}
+.addr span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.addr b{font-weight:500;font-size:16px}
+/* history */
+.tl{list-style:none;margin:0;padding:0;border-left:1px solid #424242;margin-left:8px;display:grid;gap:0}
+.tl li{position:relative;padding:0 0 34px 34px;display:grid;grid-template-columns:150px 1fr;gap:6px 28px}
+.tl li::before{content:"";position:absolute;left:-6px;top:10px;width:11px;height:11px;border-radius:50%;background:var(--ink);border:1px solid #B4B4B4}
+.tl li.now::before{background:#B4B4B4}
+.tl .yr{font-family:var(--display);font-size:28px;line-height:1.2;color:#B4B4B4;font-variant-numeric:tabular-nums}
+.tl h3{font-size:17px;font-weight:600;font-family:var(--body);color:var(--paper);margin-bottom:4px}
+.tl p{color:var(--fog);font-size:15px;max-width:60ch}
+@media (max-width:640px){.tl li{grid-template-columns:1fr}}
+.disclaim{margin-top:12px;font-size:13px;color:#A3A3A3;max-width:70ch}
+
+footer{padding:36px 0;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ===== Old print layer: monochrome, grain, rules, letterpress ===== */
+:root{--grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --speck:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 9 -7.2'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");}
+body{font-size:18.5px;line-height:1.6;font-feature-settings:"liga","onum";background-color:var(--mist)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;background-image:var(--grain);opacity:.32;mix-blend-mode:multiply}
+.hero,.level.dark{position:relative;isolation:isolate}
+.hero::after,.level.dark::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--speck);opacity:.18;mix-blend-mode:screen;z-index:0}
+.level.dark>.wrap{position:relative;z-index:1}
+h1,h2,h3,.tile b,.tl .yr,.manifesto,.scale{text-shadow:0 0 .6px currentColor}
+svg,canvas{filter:grayscale(1)}
+.eyebrow,.scale small,.rail a,.side .role,.site .role,.sp .when,.tile span,.rowfacts dt,.addr span,.scalebar div,.fact dt,.zoomnext,.btn,.disc-btn,.dayrow-h,.year h3{font-family:var(--sc);text-transform:none;letter-spacing:.08em;font-weight:400}
+.eyebrow{font-size:15px}.scale small{font-size:13px}.rail a{font-size:13px}.side .role,.site .role,.sp .when,.rowfacts dt,.addr span{font-size:14px}
+.btn{font-size:16px;letter-spacing:.06em;padding:13px 24px}
+.zoomnext{font-size:16px}
+.scale::before{content:"N\00B0\00A0";font-size:.7em;vertical-align:.25em}
+.lv-head h2{font-weight:400;letter-spacing:-.005em}
+.lv-head h2 em{font-style:italic}
+.lv-head .intro{font-size:19px}
+.lv-head .intro::first-letter{font-family:var(--display);float:left;font-size:3.4em;line-height:.82;padding:6px 8px 0 0;color:var(--ink)}
+.dark .lv-head .intro::first-letter{color:var(--paper)}
+header{border-bottom:3px double var(--ink)}
+.level{border-top:3px double var(--ink)}
+.level.dark{border-top-color:#000}
+.figure{position:relative}
+.figure::after{content:"";position:absolute;inset:0 0 auto 0;height:calc(100% - 28px);pointer-events:none;background-image:radial-gradient(rgba(0,0,0,.22) .6px,transparent .9px);background-size:4px 4px;mix-blend-mode:multiply;opacity:.55}
+.figure figcaption{font-style:italic;font-size:14px}
+.mapcard,.site,.sp,.addr{box-shadow:none}
+.tbc{font-family:var(--body);font-style:italic;font-size:15px}
+.masthead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid #9a9a9a;border-bottom:3px double #9a9a9a;padding:7px 0;margin-bottom:34px;font-family:var(--sc);font-size:14px;letter-spacing:.1em;color:#BDBDBD}
+.hero h1{font-weight:400}
+.hero h1 em{font-style:italic}
+.hero .motto{font-style:italic;font-family:var(--display)}
+.logo{font-family:var(--display)}
+.sp h3,.site h3,.side h3{font-weight:400}
+.tl h3,.dayrow b,.notes p strong{font-family:var(--display);font-weight:400;font-size:1.12em;letter-spacing:.01em}
+.words dt{font-style:italic}
+.src{font-style:italic}
+
+/* ===== One continuous page ===== */
+#air{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none;filter:grayscale(1)}
+main,footer{position:relative;z-index:1}
+.hero{background:transparent;color:var(--ink);overflow:visible}
+.hero::after,.level.dark::after{display:none}
+.hero .wrap{padding-top:44px;padding-bottom:28px}
+.hero h1{color:var(--ink)}
+.hero .lead,.hero .motto{color:var(--muted)}
+.masthead{color:var(--muted);border-top:1px solid var(--ink);border-bottom:3px double var(--ink)}
+.scalebar div{border-left-color:#9a9a9a;color:var(--muted)}
+.scalebar div b{color:var(--ink)}
+.scalebar div:last-child{border-color:var(--ink)}
+.level,.level.paper,.level.dark{background:transparent;color:var(--ink);border-top:0;padding:28px 0 36px}
+.level>.wrap::before{content:"\2042";display:block;text-align:center;font-size:18px;color:var(--muted);margin:0 auto 32px;line-height:1;
+  background:linear-gradient(var(--line),var(--line)) left 50%/calc(50% - 26px) 1px no-repeat,linear-gradient(var(--line),var(--line)) right 50%/calc(50% - 26px) 1px no-repeat}
+.lv-head{margin-bottom:32px}
+.lv-head h2{font-size:clamp(26px,2.6vw,36px)}
+footer{border-top:3px double var(--ink)}
+/* former dark blocks, now on paper */
+.vs{border-top:1px solid var(--ink)}
+.mid{border-color:var(--line);color:var(--muted)}
+.side .role,.side p,.side dt{color:var(--muted)}
+.side dd,.side h3{color:var(--ink)}
+.tl{border-left-color:var(--ink)}
+.tl li::before{background:var(--mist);border-color:var(--ink)}
+.tl li.now::before{background:var(--ink)}
+.tl .yr,.tl h3{color:var(--ink)}
+.tl p,.disclaim{color:var(--muted)}
+.manifesto{color:var(--ink)}
+.words{color:var(--muted)} .words dt{color:var(--ink)}
+.level .scale{color:var(--muted)}
+.dark .lv-head .intro,.lv-head .intro{color:var(--muted)}
+.lv-head .intro::first-letter{color:var(--ink)}
+.notes p strong,.side h3{color:var(--ink)}
+
+/* ===== Newspaper chapters ===== */
+.level>.wrap::before{display:none}
+.level{padding:40px 0 24px}
+.lv-head{display:block;margin-bottom:28px;max-width:960px}
+.kicker{font-family:var(--sc);font-size:17px;letter-spacing:.12em;color:var(--ink);margin-bottom:8px}
+.kicker span{font-family:var(--body);font-style:italic;letter-spacing:0;color:var(--muted);font-size:15px;margin-left:12px}
+.kicker span::before{content:"— "}
+.lv-head h2{font-size:clamp(28px,3vw,40px);line-height:1.12;margin:0}
+.lv-head .intro{max-width:44em;text-align:justify;hyphens:auto;margin-top:16px}
+.lv-head .intro::first-letter{font-size:3.6em}
+</style>
+</head>
+<body>
+<canvas id="air" aria-hidden="true"></canvas>
+<a class="skip" href="#region">Skip to the estate</a>
+<header>
+  <div class="wrap bar">
+    <div class="discover" id="discover">
+      <button type="button" class="disc-btn" id="discBtn" aria-expanded="false" aria-controls="discMenu">Discover<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 3.5 5 7l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button>
+      <ul class="disc-menu" id="discMenu" hidden>
+        <li><a href="https://lumist.wine/#journal">Journal</a></li>
+        <li><a href="#top" aria-current="page">Estate</a></li>
+      </ul>
+    </div>
+    <a class="logo" href="https://lumist.wine/" aria-label="LUMIST home">LUMIST</a>
+    <div class="icons">
+      <a href="https://lumist.wine/myaccount/" class="icon" aria-label="Log in" title="Log in">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </a>
+      <a href="https://lumist.wine/cart/" class="icon" aria-label="Shopping cart" title="Shopping cart">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<nav aria-label="Zoom level">
+  <ol class="rail" id="rail">
+    <li><a href="#region"><span>Region</span><i></i></a></li>
+    <li><a href="#weather"><span>Weather</span><i></i></a></li>
+    <li><a href="#sides"><span>Two sides</span><i></i></a></li>
+    <li><a href="#marsh"><span>The marsh</span><i></i></a></li>
+    <li><a href="#estate"><span>The estate</span><i></i></a></li>
+    <li><a href="#history"><span>History</span><i></i></a></li>
+    <li><a href="#row"><span>The row</span><i></i></a></li>
+    <li><a href="#bubble"><span>The bubble</span><i></i></a></li>
+  </ol>
+</nav>
+
+<main id="top">
+  <section class="hero">
+    
+    <div class="wrap">
+      <div class="masthead"><span>The LUMIST Review</span><span>The Estate Issue</span><span>Carneros, California · MMXXVI</span></div>
+      <span class="eyebrow">The estate · Carneros, California</span>
+      <h1>Start wide.<br><em>End in the bottle.</em></h1>
+      <p class="motto">Beyond ordinary. Rooted in origin.</p>
+      <p class="lead">LUMIST is bubble wine for introverts. No toasts, no ceremony, no rules about when or how to drink it. Just a bottle, opened at your own pace. What we never skip is where it comes from. Scroll to zoom in, from the bay to a single bubble.</p>
+      <div class="scalebar" aria-label="Eight zoom levels">
+        <div style="--i:0"><b>Region</b>Bay</div>
+        <div style="--i:1"><b>Weather</b>Fog &amp; wind</div>
+        <div style="--i:2"><b>Sides</b>Napa · Sonoma</div>
+        <div style="--i:3"><b>Marsh</b>Neighbours</div>
+        <div style="--i:4"><b>Estate</b>Las Amigas Rd</div>
+        <div style="--i:5"><b>History</b>Since 1979</div>
+        <div style="--i:6"><b>Row</b>One vine</div>
+        <div style="--i:7"><b>Bubble</b>One bottle</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL 1 -->
+  <section class="level" id="region">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">The Region<span>50 miles</span></div>
+        <div>
+          <h2>Carneros, where the bay meets the valleys.</h2>
+          <p class="intro">North of San Francisco, the bay narrows into San Pablo Bay. On its northern shore, low rolling hills sit between the water and the start of two famous valleys. That strip of land is Carneros.</p>
+        </div>
+      </div>
+      <div class="split">
+        <figure class="figure">
+          <svg viewBox="0 0 640 440" role="img" aria-labelledby="m1t" style="background:var(--paper);border:1px solid var(--line);border-radius:0">
+            <title id="m1t">Sketch map of the San Francisco Bay area with Carneros on the north shore of San Pablo Bay</title>
+            <!-- ocean -->
+            <path d="M0 0 H90 C70 80 110 140 80 210 C60 260 100 330 70 440 H0Z" fill="#DEDEDE"/>
+            <text x="18" y="300" fill="#626262" font-size="11" letter-spacing="2.5" transform="rotate(-90 18 300)">PACIFIC OCEAN</text>
+            <!-- bays -->
+            <path d="M120 300 C150 290 170 300 200 296 C230 292 240 330 260 360 C280 400 300 420 330 440 H250 C230 410 200 380 190 350 C180 330 150 320 120 300Z" fill="#4D4D4D" opacity=".75"/>
+            <path d="M190 262 C230 240 300 236 350 250 C390 262 410 280 400 296 C380 312 330 300 300 296 C260 292 230 300 205 292 C190 286 182 272 190 262Z" fill="#4D4D4D" opacity=".75"/>
+            <text x="250" y="276" fill="#F6F6F6" font-size="11" letter-spacing="2">SAN PABLO BAY</text>
+            <text x="150" y="388" fill="#626262" font-size="11" letter-spacing="2">SAN FRANCISCO</text>
+            <circle cx="236" cy="372" r="3" fill="#626262"/>
+            <!-- valleys -->
+            <path d="M200 60 C215 120 220 180 230 228" stroke="#878787" stroke-width="22" stroke-linecap="round" fill="none" opacity=".35"/>
+            <path d="M340 40 C335 110 320 170 300 226" stroke="#828282" stroke-width="22" stroke-linecap="round" fill="none" opacity=".35"/>
+            <text x="140" y="80" fill="#212121" font-size="12" letter-spacing="2">SONOMA VALLEY</text>
+            <text x="352" y="70" fill="#212121" font-size="12" letter-spacing="2">NAPA VALLEY</text>
+            <!-- carneros band -->
+            <path d="M196 236 C230 222 280 218 330 226 L326 248 C280 240 236 244 204 256Z" fill="#747474" opacity=".85"/>
+            <text x="352" y="214" fill="#747474" font-family="IM Fell English, Georgia, serif" font-size="26">Carneros</text>
+            <path d="M348 220 L326 232" stroke="#747474"/>
+            <!-- zoom box -->
+            <rect x="180" y="200" width="168" height="72" fill="none" stroke="#212121" stroke-dasharray="4 4"/>
+            <text x="182" y="194" fill="#212121" font-size="10" letter-spacing="1.5">ZOOM IN ↓</text>
+            <!-- compass -->
+            <g transform="translate(590 60)" fill="#626262" font-size="10"><path d="M0 -18 L5 0 L0 -4 L-5 0Z"/><text x="-4" y="14">N</text></g>
+          </svg>
+          <figcaption>Sketch, not to scale. The dashed box is the next zoom level.</figcaption>
+        </figure>
+        <div class="notes">
+          <p><strong>Cold water, close by.</strong> The vineyards here sit nearer to the bay than anywhere else in either valley. Cool air and morning fog roll in off the water most days of the growing season.</p>
+          <p><strong>A region of its own.</strong> Carneros was recognised as its own American wine region in 1983. It is one of the few that crosses a county line.</p>
+          <p><strong>Built for bubbles.</strong> Slow, cool ripening keeps the grapes fresh and lively, which is what bubble wine needs most.</p>
+          <a class="zoomnext" href="#weather">Zoom in: the weather</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- LEVEL 2: WEATHER -->
+  <section class="level" id="weather">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">The Weather<span>the sky above</span></div>
+        <div>
+          <h2>The weather, written by the bay.</h2>
+          <p class="intro">Most Carneros vineyards sit just one to four miles from San Pablo Bay. That short distance sets everything: cool days, windy afternoons, foggy mornings, and summers that rarely get hot.</p>
+        </div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><b>72°F</b><span>Average growing-season temperature (22.2°C)</span></div>
+        <div class="tile"><b>80°F</b><span>Summer highs rarely go above this (27°C)</span></div>
+        <div class="tile"><b>25.2 in</b><span>Average rain a year (64 cm), most of it in winter</span></div>
+        <div class="tile"><b>277</b><span>Frost-free days a year</span></div>
+      </div>
+      <div class="year">
+        <h3>A Carneros year</h3>
+        <svg viewBox="0 0 1100 120" role="img" aria-labelledby="yrT">
+          <title id="yrT">Year strip: last frost in the last week of February, growing season from April 1 to November 1, rain mostly in winter</title>
+          <g font-family="EB Garamond, Georgia, serif" font-size="12" fill="#626262" text-anchor="middle">
+            <text x="46" y="112">Jan</text><text x="137" y="112">Feb</text><text x="229" y="112">Mar</text><text x="321" y="112">Apr</text><text x="412" y="112">May</text><text x="504" y="112">Jun</text><text x="596" y="112">Jul</text><text x="687" y="112">Aug</text><text x="779" y="112">Sep</text><text x="871" y="112">Oct</text><text x="962" y="112">Nov</text><text x="1054" y="112">Dec</text>
+          </g>
+          <g stroke="#D1D1D1"><path d="M0 92H1100"/><path d="M92 86V98M183 86V98M275 86V98M367 86V98M458 86V98M550 86V98M642 86V98M733 86V98M825 86V98M917 86V98M1008 86V98"/></g>
+          <rect x="0" y="62" width="275" height="16" fill="#6F6F6F" opacity=".25"/><rect x="917" y="62" width="183" height="16" fill="#6F6F6F" opacity=".25"/>
+          <text x="8" y="56" font-family="EB Garamond, Georgia, serif" font-size="11" fill="#626262" letter-spacing="1">WET SEASON</text>
+          <rect x="275" y="30" width="642" height="24" rx="0" fill="#878787" opacity=".85"/>
+          <text x="291" y="47" font-family="EB Garamond, Georgia, serif" font-size="12" fill="#F6F6F6" font-weight="600" letter-spacing="1">GROWING SEASON · APR 1 – NOV 1</text>
+          <path d="M160 14V90" stroke="#747474" stroke-dasharray="3 3"/><circle cx="160" cy="14" r="4" fill="#747474"/>
+          <text x="170" y="18" font-family="EB Garamond, Georgia, serif" font-size="11" fill="#747474" letter-spacing="1">LAST FROST · LATE FEB</text>
+        </svg>
+      </div>
+      <p class="dayrow-h" style="margin-top:44px">A summer day on Las Amigas Road</p>
+      <div class="dayrow" style="margin-top:0">
+        <div style="background:linear-gradient(180deg,#CFCFCF,#E6E6E6)"><time>06:00</time><b>Fog</b><p>Marine fog rolls in off the bay and sits on the vines.</p></div>
+        <div style="background:linear-gradient(180deg,#D9D9D9,#EDEDED)"><time>11:00</time><b>Light</b><p>The fog lifts. The moment our name comes from.</p></div>
+        <div style="background:linear-gradient(180deg,#B8B8B8,#DEDEDE)"><time>15:00</time><b>Wind</b><p>Strong breezes off the bay cool and dry the vineyard.</p></div>
+        <div style="background:linear-gradient(180deg,#292929,#484848);color:#F6F6F6"><time>22:00</time><b>Cool night</b><p style="color:#C9C9C9">Ripening slows down and the grapes keep their freshness.</p></div>
+      </div>
+      <dl class="rowfacts" style="margin-top:40px">
+        <div><dt>Heat units</dt><dd>1,834 degree days</dd></div>
+        <div><dt>Growing season</dt><dd>Apr 1 – Nov 1</dd></div>
+        <div><dt>Longest day</dt><dd>14.5 hours of light</dd></div>
+        <div><dt>Season average</dt><dd>12.3 hours of light</dd></div>
+      </dl>
+      <p class="src">Figures are averages for the Los Carneros appellation, from the Carneros Wine Alliance and Napa Valley Vintners.</p>
+      <p style="margin-top:20px"><a class="zoomnext" href="#sides">Zoom in: the two sides</a></p>
+    </div>
+  </section>
+
+  <!-- LEVEL 3 -->
+  <section class="level" id="sides">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">Two Counties<span>10 miles</span></div>
+        <div>
+          <h2>One region, two counties.</h2>
+          <p class="intro">Carneros is split down the middle. The western half is in Sonoma County, the eastern half in Napa County. Same fog, same bay, same cool afternoons. LUMIST works on both sides of the line.</p>
+        </div>
+      </div>
+      <figure class="figure">
+        <svg viewBox="0 0 1100 420" role="img" aria-labelledby="m2t">
+          <title id="m2t">Carneros split into a Sonoma side to the west and a Napa side to the east, with the LUMIST vineyard and winery marked</title>
+          <rect width="1100" height="420" fill="#2A2A2A"/>
+          <path d="M0 330 C200 300 360 345 560 322 S900 296 1100 318 V420 H0Z" fill="#4D4D4D"/>
+          <text x="40" y="392" fill="#A3A3A3" font-size="12" letter-spacing="3">SAN PABLO BAY</text>
+          <g fill="none" stroke="#434343">
+            <path d="M0 260 C180 220 320 240 480 205 S800 180 1100 170"/><path d="M0 220 C180 180 330 196 500 160 S820 136 1100 124"/><path d="M0 180 C200 140 340 152 520 118 S830 92 1100 82"/><path d="M0 140 C200 100 360 110 540 78 S840 52 1100 42"/>
+          </g>
+          <rect x="0" y="0" width="550" height="420" fill="#878787" opacity=".08"/>
+          <rect x="550" y="0" width="550" height="420" fill="#828282" opacity=".08"/>
+          <path d="M550 20 V320" stroke="#A3A3A3" stroke-dasharray="6 6"/>
+          <text x="560" y="40" fill="#A3A3A3" font-size="11" letter-spacing="2">COUNTY LINE</text>
+          <text x="60" y="70" fill="#F6F6F6" font-family="IM Fell English, Georgia, serif" font-size="44">Sonoma</text>
+          <text x="60" y="94" fill="#A3A3A3" font-size="12" letter-spacing="2.5">WEST SIDE OF CARNEROS</text>
+          <text x="1040" y="70" fill="#F6F6F6" font-family="IM Fell English, Georgia, serif" font-size="44" text-anchor="end">Napa</text>
+          <text x="1040" y="94" fill="#A3A3A3" font-size="12" letter-spacing="2.5" text-anchor="end">EAST SIDE OF CARNEROS</text>
+          <!-- vineyard -->
+          <g transform="translate(330 220)"><circle r="9" fill="#878787"/><circle r="18" fill="none" stroke="#878787"/><text x="26" y="5" fill="#F6F6F6" font-size="14">LUMIST Vineyard</text></g>
+          <!-- winery -->
+          <g transform="translate(760 190)"><rect x="-9" y="-9" width="18" height="18" fill="#828282"/><circle r="20" fill="none" stroke="#828282"/><text x="28" y="5" fill="#F6F6F6" font-size="14">LUMIST Estate · Las Amigas Rd</text></g>
+          <path d="M350 214 C480 170 620 170 738 188" stroke="#B4B4B4" stroke-dasharray="3 6" fill="none" stroke-width="1.5"/>
+          <text x="545" y="160" fill="#B4B4B4" font-size="12" letter-spacing="1.5" text-anchor="middle">HARVEST ROUTE</text>
+          <rect x="290" y="130" width="540" height="130" fill="none" stroke="#F6F6F6" stroke-dasharray="4 4" opacity=".7"/>
+          <text x="292" y="124" fill="#F6F6F6" font-size="10" letter-spacing="1.5" opacity=".8">ZOOM IN ↓</text>
+        </svg>
+        <figcaption>Sketch, not to scale. Marker positions are illustrative.</figcaption>
+      </figure>
+      <div class="vs">
+        <div class="side" style="--c:var(--sonoma)">
+          <span class="role">Where we grow</span>
+          <h3><i></i>Sonoma</h3>
+          <p>The western side, closer to where ocean air enters the bay. Our Sonoma vineyard is pure growing ground: no cellar, just vines, wind and fog.</p>
+          <dl><dt>What's here</dt><dd>LUMIST Vineyard</dd><dt>Grapes</dt><dd><span class="tbc">To be confirmed</span></dd><dt>Size</dt><dd><span class="tbc">To be confirmed</span></dd></dl>
+        </div>
+        <div class="mid" aria-hidden="true">&amp;</div>
+        <div class="side" style="--c:var(--napa)">
+          <span class="role">Where we grow and make</span>
+          <h3><i></i>Napa</h3>
+          <p>The eastern side, and home. The LUMIST estate is here: the winery where every bottle is made, rested and finished, with vines right outside its doors.</p>
+          <dl><dt>What's here</dt><dd>Winery &amp; estate vineyard</dd><dt>Grapes</dt><dd><span class="tbc">To be confirmed</span></dd><dt>Size</dt><dd><span class="tbc">To be confirmed</span></dd></dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- LEVEL 4: MARSH -->
+  <section class="level" id="marsh">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">The Neighbours<span>2 miles around</span></div>
+        <div>
+          <h2>Quiet neighbours: the marsh next door.</h2>
+          <p class="intro">About a mile from the estate, Buchli Station Road leaves Las Amigas Road and runs south to the Napa-Sonoma Marshes Wildlife Area: close to 14,000 acres of tidal marsh, sloughs and old salt ponds on the edge of San Pablo Bay. For people who like quiet, it is the best neighbour we could ask for.</p>
+        </div>
+      </div>
+      <div class="split">
+        <figure class="figure">
+          <svg viewBox="0 0 640 440" role="img" aria-labelledby="m4mt" style="background:var(--paper);border:1px solid var(--line);border-radius:0">
+            <title id="m4mt">Sketch map: Las Amigas Road with the LUMIST estate, Buchli Station Road leading south past the railroad to the marsh and its ponds</title>
+            <defs><pattern id="vin" width="8" height="8" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="8" stroke="#828282" stroke-width="1.4" opacity=".6"/></pattern>
+            <pattern id="vin2" width="8" height="8" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="8" stroke="#A5A5A5" stroke-width="1.4" opacity=".55"/></pattern></defs>
+            <rect x="30" y="40" width="190" height="120" fill="url(#vin2)"/>
+            <rect x="250" y="30" width="200" height="140" fill="url(#vin)"/>
+            <rect x="470" y="50" width="140" height="110" fill="url(#vin2)"/>
+            <path d="M0 176 H640" stroke="#212121" stroke-width="3"/>
+            <text x="20" y="196" font-family="EB Garamond, Georgia, serif" font-size="11" letter-spacing="2" fill="#212121">LAS AMIGAS ROAD</text>
+            <rect x="320" y="120" width="56" height="38" fill="#F6F6F6" stroke="#212121"/><path d="M314 122 L348 100 L382 122" fill="#F6F6F6" stroke="#212121"/>
+            <text x="348" y="88" text-anchor="middle" font-family="IM Fell English, Georgia, serif" font-size="20" fill="#212121">LUMIST</text>
+            <path d="M520 176 V300" stroke="#212121" stroke-width="2"/>
+            <text x="530" y="186" font-family="EB Garamond, Georgia, serif" font-size="10" letter-spacing="1.5" fill="#212121" transform="rotate(90 530 186)">BUCHLI STATION RD</text>
+            <path d="M376 150 C430 150 480 160 520 176" stroke="#747474" stroke-dasharray="2 5" fill="none" stroke-width="1.6"/>
+            <text x="404" y="144" font-family="EB Garamond, Georgia, serif" font-size="10" letter-spacing="1" fill="#747474">≈ 1 MILE</text>
+            <path d="M0 296 H640" stroke="#626262" stroke-dasharray="10 4"/>
+            <text x="20" y="290" font-family="EB Garamond, Georgia, serif" font-size="10" letter-spacing="1.5" fill="#626262">RAILROAD</text>
+            <rect x="0" y="304" width="640" height="136" fill="#C5C5C5" opacity=".55"/>
+            <g fill="#4D4D4D" opacity=".55"><rect x="40" y="330" width="150" height="70"/><rect x="210" y="324" width="120" height="86"/><rect x="350" y="336" width="140" height="64"/></g>
+            <path d="M500 304 C520 340 560 360 640 372" stroke="#4D4D4D" stroke-width="5" fill="none" opacity=".55"/>
+            <circle cx="520" cy="312" r="5" fill="#747474"/>
+            <text x="508" y="328" text-anchor="end" font-family="EB Garamond, Georgia, serif" font-size="10" fill="#212121" letter-spacing="1">PARKING · TRAILHEAD</text>
+            <text x="48" y="425" font-family="IM Fell English, Georgia, serif" font-size="22" fill="#212121">Napa-Sonoma Marshes · Huichica Creek Unit</text>
+            <g stroke="#212121" fill="none" stroke-width="1.3" opacity=".7"><path d="M92 360 q6 -6 12 0 q6 -6 12 0"/><path d="M260 350 q6 -6 12 0 q6 -6 12 0"/><path d="M410 362 q6 -6 12 0 q6 -6 12 0"/></g>
+            <g transform="translate(600 30)" fill="#626262" font-size="10" font-family="EB Garamond, Georgia, serif"><path d="M0 -12 L4 2 L0 -1 L-4 2Z"/><text x="-3" y="14">N</text></g>
+          </svg>
+          <figcaption>Sketch, not to scale. Former salt ponds are being restored to tidal marsh.</figcaption>
+        </figure>
+        <div class="notes">
+          <p><strong>A big, living wetland.</strong> The marsh is home to at least 128 species of birds and 25 species of fish, across tidal marsh, sloughs, seasonal wetlands and uplands.</p>
+          <p><strong>Healing old land.</strong> In the mid-1900s much of this marsh was diked into ponds to make salt. Since the 1970s the state has been buying the land back and restoring it to marsh.</p>
+          <p><strong>Why it matters.</strong> Around 1860 these marshes were among the most productive wetlands on the Pacific Coast. By the mid-1980s the Bay had lost over 90% of its wetlands.</p>
+          <p><strong>Visiting.</strong> From Las Amigas Road, turn south on Buchli Station Road and drive to the end, past the railroad tracks. No dogs from March to June, when birds are nesting.</p>
+        </div>
+      </div>
+      <div class="species">
+        <article class="sp">
+          <svg viewBox="0 0 80 56" aria-hidden="true"><path d="M8 44 C14 30 30 28 42 34 C46 22 52 10 58 10 C64 10 66 16 62 18 C56 20 54 30 56 38 C58 46 50 50 36 50 C22 50 12 50 8 44Z" fill="none" stroke="#212121" stroke-width="1.6"/><path d="M62 14 L72 16" stroke="#212121" stroke-width="1.6"/></svg>
+          <span class="when">Winter</span><h3>Tundra swan</h3><p>Large flocks rest on the old salt ponds in the cold months.</p>
+        </article>
+        <article class="sp">
+          <svg viewBox="0 0 80 56" aria-hidden="true"><path d="M30 34 C30 22 40 20 44 24 C46 14 48 6 54 6 L64 8 L54 10 C52 16 52 24 50 30 C48 38 40 40 34 38Z M38 38 L36 54 M42 38 L44 54" fill="none" stroke="#212121" stroke-width="1.6"/></svg>
+          <span class="when">Year-round</span><h3>Egret</h3><p>Wading slowly through shallow ponds and sloughs.</p>
+        </article>
+        <article class="sp">
+          <svg viewBox="0 0 80 56" aria-hidden="true"><circle cx="40" cy="20" r="12" fill="none" stroke="#212121" stroke-width="1.6"/><circle cx="35" cy="19" r="3" fill="#212121"/><circle cx="45" cy="19" r="3" fill="#212121"/><path d="M28 28 C26 44 32 50 40 50 C48 50 54 44 52 28 M34 50 L34 54 M46 50 L46 54" fill="none" stroke="#212121" stroke-width="1.6"/></svg>
+          <span class="when">The creek's namesake</span><h3>Burrowing owl</h3><p>"Huichica" is the Wappo name for this owl, once abundant along Huichica Creek.</p>
+        </article>
+        <article class="sp">
+          <svg viewBox="0 0 80 56" aria-hidden="true"><path d="M4 26 C16 20 28 22 36 28 L40 22 L44 28 C52 22 64 20 76 26 C64 26 54 30 46 34 L40 46 L34 34 C26 30 16 26 4 26Z" fill="none" stroke="#212121" stroke-width="1.6"/></svg>
+          <span class="when">Overhead</span><h3>Hawks</h3><p>Hunting over the open uplands between the vines and the water.</p>
+        </article>
+      </div>
+      <p class="src">Sources: California Department of Fish and Wildlife; local field notes from the Huichica Creek Unit.</p>
+      <p style="margin-top:20px"><a class="zoomnext" href="#estate">Zoom in: the estate</a></p>
+    </div>
+  </section>
+
+  <!-- LEVEL 5 -->
+  <section class="level" id="estate">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">The Estate<span>1,000 feet</span></div>
+        <div>
+          <h2>A winery in Napa. A vineyard in Sonoma.</h2>
+          <p class="intro">Our home is on Las Amigas Road, on the Napa side of Carneros, a mile from the marsh. Two sites, one short drive apart. At harvest, grapes picked on the Sonoma side travel across the county line to the winery in Napa, where they meet the fruit from the estate's own vines.</p>
+        </div>
+      </div>
+      <div class="addr">
+        <div><span>Estate &amp; winery</span><b>2750 Las Amigas Road, Napa, CA 94559</b></div>
+        <div><span>Coordinates</span><b>38.2222° N · 122.2659° W</b></div>
+        <div><span>Appellation</span><b>Los Carneros, Napa County</b></div>
+      </div>
+      <figure class="figure">
+        <svg viewBox="0 0 1100 380" role="img" aria-labelledby="m3t" style="background:var(--mist);border:1px solid var(--line);border-radius:0">
+          <title id="m3t">Plan sketch: the Sonoma vineyard on the left, the Napa winery with its estate vineyard on the right, joined by the harvest route</title>
+          <defs>
+            <pattern id="rowsS" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)"><line x1="0" y1="0" x2="0" y2="10" stroke="#878787" stroke-width="2"/></pattern>
+            <pattern id="rowsN" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(12)"><line x1="0" y1="0" x2="0" y2="10" stroke="#828282" stroke-width="2"/></pattern>
+          </defs>
+          <!-- sonoma parcel -->
+          <path d="M60 90 L380 60 L420 290 L80 320Z" fill="url(#rowsS)" opacity=".75"/>
+          <path d="M60 90 L380 60 L420 290 L80 320Z" fill="none" stroke="#878787" stroke-width="1.5"/>
+          <text x="70" y="50" fill="#212121" font-family="IM Fell English, Georgia, serif" font-size="28">Sonoma vineyard</text>
+          <!-- napa parcel -->
+          <path d="M700 80 L1040 70 L1050 300 L690 310Z" fill="url(#rowsN)" opacity=".75"/>
+          <path d="M700 80 L1040 70 L1050 300 L690 310Z" fill="none" stroke="#828282" stroke-width="1.5"/>
+          <rect x="740" y="190" width="120" height="78" fill="#F6F6F6" stroke="#212121"/>
+          <path d="M732 192 L800 150 L868 192" fill="#F6F6F6" stroke="#212121"/>
+          <rect x="788" y="232" width="24" height="36" fill="#212121"/>
+          <text x="800" y="290" fill="#212121" font-size="11" letter-spacing="1.5" text-anchor="middle">WINERY</text>
+          <text x="1040" y="50" fill="#212121" font-family="IM Fell English, Georgia, serif" font-size="28" text-anchor="end">Napa estate</text>
+          <!-- county line -->
+          <path d="M550 20 V360" stroke="#626262" stroke-dasharray="6 6"/>
+          <text x="556" y="352" fill="#626262" font-size="10" letter-spacing="1.5">COUNTY LINE</text>
+          <!-- route -->
+          <path d="M420 200 C500 230 600 170 740 228" stroke="#747474" stroke-width="2" fill="none" stroke-dasharray="2 7" stroke-linecap="round"/>
+          <text x="560" y="180" fill="#747474" font-size="11" letter-spacing="1.5" text-anchor="middle">HARVEST ROUTE</text>
+          <!-- zoom box on one row -->
+          <rect x="200" y="150" width="120" height="70" fill="none" stroke="#212121" stroke-dasharray="4 4"/>
+          <text x="202" y="144" fill="#212121" font-size="10" letter-spacing="1.5">ZOOM IN ↓</text>
+        </svg>
+        <figcaption>Plan sketch, not to scale. Shapes and row directions are illustrative.</figcaption>
+      </figure>
+      <div class="sites">
+        <article class="site" style="--c:var(--sonoma)">
+          <span class="role">Sonoma side · Vineyard</span>
+          <h3><span class="tbc" style="font-family:var(--body);font-size:14px">Vineyard name</span></h3>
+          <p>Open, wind-swept ground on the western half of Carneros. At harvest its grapes make the short trip east to the winery.</p>
+          <ul>
+            <li><span>Planted to</span><span class="tbc">To be confirmed</span></li>
+            <li><span>Area</span><span class="tbc">To be confirmed</span></li>
+            <li><span>Soil</span><span class="tbc">To be confirmed</span></li>
+          </ul>
+        </article>
+        <article class="site" style="--c:var(--napa)">
+          <span class="role">Napa side · Winery &amp; estate</span>
+          <h3>The LUMIST Estate</h3>
+          <p>Home of the winery since 1979, first as Acacia, now as LUMIST. Every bottle is made, rested and finished here, surrounded by the estate's own vines.</p>
+          <ul>
+            <li><span>Address</span><span>2750 Las Amigas Road</span></li>
+            <li><span>Vines</span><span>About 75 planted acres</span></li>
+            <li><span>Winery</span><span>About 40,000 sq ft</span></li>
+            <li><span>Planted to</span><span class="tbc">To be confirmed</span></li>
+            <li><span>Visits</span><span class="tbc">To be confirmed</span></li>
+          </ul>
+        </article>
+      </div>
+      <p style="margin-top:20px"><a class="zoomnext" href="#history">Same place, through time: the history</a></p>
+    </div>
+  </section>
+
+
+  <!-- HISTORY -->
+  <section class="level" id="history">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">History<span>1979 → today</span></div>
+        <div>
+          <h2>Same road, new chapter.</h2>
+          <p class="intro">LUMIST is not the first wine made at 2750 Las Amigas Road. We are the latest in a line of people who saw something in this cold, windy corner beside the marsh. We go beyond what was done here, and we respect where it came from.</p>
+        </div>
+      </div>
+      <ol class="tl">
+        <li><span class="yr">Before</span><div><h3>Dairies, grazing land and salt ponds</h3><p>For much of the 20th century, the land beside the marsh was dairy farms and pasture. Families like the Duhigs farmed here; the road to the marsh office still carries their name. Vineyards slowly replaced the cows.</p></div></li>
+        <li><span class="yr">1979</span><div><h3>Acacia opens on Las Amigas Road</h3><p>Michael Richmond and Jerry Goldstein found Acacia Winery here, with Larry Brooks as founding winemaker, before Carneros was even an official wine region. It focuses on Pinot Noir and Chardonnay.</p></div></li>
+        <li><span class="yr">1983</span><div><h3>Carneros gets its own name</h3><p>Los Carneros becomes the first California appellation drawn by climate rather than county lines. Acacia is one of the wineries that helped put it on the map.</p></div></li>
+        <li><span class="yr">1986</span><div><h3>A new owner</h3><p>The Chalone group buys Acacia for $8 million. Over the following years the winery also makes some bubble wine alongside its Chardonnay.</p></div></li>
+        <li><span class="yr">1990s</span><div><h3>The estate grows</h3><p>Fruit had come from local Carneros growers. In the mid-1990s Acacia begins buying the properties around the winery, building up its own vineyards.</p></div></li>
+        <li><span class="yr">2000s</span><div><h3>A partnership with the marsh</h3><p>The winery teams up with the state's Department of Fish and Game, giving part of the proceeds of a "Marsh" Chardonnay to wetland restoration next door.</p></div></li>
+        <li><span class="yr">2005</span><div><h3>Part of a global group</h3><p>Chalone, and Acacia with it, is bought by Diageo.</p></div></li>
+        <li><span class="yr">2016</span><div><h3>Brand and land go separate ways</h3><p>The Acacia brand moves to Treasury Wine Estates. The winery and vineyards are bought by the Peju family and reopen that autumn as Calmére Estate.</p></div></li>
+        <li><span class="yr">2021</span><div><h3>A quiet pause</h3><p>Calmére stops production and closes its doors. The property is later sold to new owners.</p></div></li>
+        <li class="now"><span class="yr">Today</span><div><h3>LUMIST</h3><p>The same fog, the same wind, the same road. A new kind of bubble wine, made for quiet people, from a place with more than forty years of Carneros wine behind it.</p></div></li>
+      </ol>
+      <p class="disclaim">The Acacia name belongs to its current owner. LUMIST is an independent label and is not affiliated with Acacia, Treasury Wine Estates or earlier owners of the property.</p>
+      <p style="margin-top:28px"><a class="zoomnext" href="#row">Zoom in: one row</a></p>
+    </div>
+  </section>
+
+  <!-- LEVEL 7 -->
+  <section class="level" id="row">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">In the Vineyard<span>10 feet</span></div>
+        <div>
+          <h2>One row, one vine, one bunch.</h2>
+          <p class="intro">Down at the level of a single vine, the place becomes two grapes. Chardonnay brings brightness and length. Pinot Noir brings red fruit and body. Every LUMIST wine is one, the other, or both.</p>
+        </div>
+      </div>
+      <div class="split">
+        <figure class="figure">
+          <svg viewBox="0 0 640 400" role="img" aria-labelledby="m4t" style="background:var(--paper);border:1px solid var(--line);border-radius:0">
+            <title id="m4t">Side view of a vineyard row with trellis wires, two vines and grape bunches</title>
+            <rect y="330" width="640" height="70" fill="#D2D2D2"/>
+            <g stroke="#626262" stroke-width="1.2"><line x1="40" y1="180" x2="600" y2="180"/><line x1="40" y1="230" x2="600" y2="230"/><line x1="40" y1="270" x2="600" y2="270"/></g>
+            <g fill="#7D7D7D"><rect x="36" y="160" width="8" height="175"/><rect x="596" y="160" width="8" height="175"/></g>
+            <!-- vine 1: chardonnay -->
+            <path d="M170 335 C168 300 176 280 170 268 C150 262 110 266 70 266 M170 268 C200 264 250 266 300 266" stroke="#4C4C4C" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <g stroke="#878787" stroke-width="2" fill="none"><path d="M90 266 C86 220 96 190 90 150"/><path d="M130 266 C132 210 124 180 132 140"/><path d="M220 266 C214 214 226 186 218 146"/><path d="M270 266 C274 222 262 194 270 156"/></g>
+            <g fill="#A5A5A5" opacity=".9"><ellipse cx="95" cy="170" rx="22" ry="14"/><ellipse cx="130" cy="150" rx="24" ry="15"/><ellipse cx="222" cy="160" rx="24" ry="15"/><ellipse cx="268" cy="176" rx="22" ry="14"/><ellipse cx="160" cy="200" rx="26" ry="15"/></g>
+            <g fill="#BFBFBF"><circle cx="146" cy="286" r="5"/><circle cx="156" cy="286" r="5"/><circle cx="166" cy="286" r="5"/><circle cx="151" cy="295" r="5"/><circle cx="161" cy="295" r="5"/><circle cx="156" cy="304" r="5"/><circle cx="200" cy="284" r="5"/><circle cx="210" cy="284" r="5"/><circle cx="205" cy="293" r="5"/><circle cx="210" cy="302" r="5"/><circle cx="200" cy="302" r="5"/></g>
+            <text x="120" y="372" fill="#212121" font-family="IM Fell English, Georgia, serif" font-size="22">Chardonnay</text>
+            <!-- vine 2: pinot -->
+            <path d="M470 335 C468 300 476 280 470 268 C440 262 400 266 350 266 M470 268 C500 264 540 266 580 266" stroke="#4C4C4C" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <g stroke="#878787" stroke-width="2" fill="none"><path d="M380 266 C376 220 386 190 380 150"/><path d="M430 266 C432 210 424 180 432 140"/><path d="M510 266 C504 214 516 186 508 146"/><path d="M560 266 C564 222 552 194 560 156"/></g>
+            <g fill="#A5A5A5" opacity=".9"><ellipse cx="385" cy="170" rx="22" ry="14"/><ellipse cx="430" cy="150" rx="24" ry="15"/><ellipse cx="512" cy="160" rx="24" ry="15"/><ellipse cx="558" cy="176" rx="22" ry="14"/><ellipse cx="460" cy="200" rx="26" ry="15"/></g>
+            <g fill="#373737"><circle cx="446" cy="286" r="5"/><circle cx="456" cy="286" r="5"/><circle cx="466" cy="286" r="5"/><circle cx="451" cy="295" r="5"/><circle cx="461" cy="295" r="5"/><circle cx="456" cy="304" r="5"/><circle cx="500" cy="284" r="5"/><circle cx="510" cy="284" r="5"/><circle cx="505" cy="293" r="5"/><circle cx="505" cy="302" r="5"/></g>
+            <text x="420" y="372" fill="#212121" font-family="IM Fell English, Georgia, serif" font-size="22">Pinot Noir</text>
+            <rect x="140" y="278" width="34" height="34" fill="none" stroke="#212121" stroke-dasharray="3 3"/>
+            <text x="138" y="272" fill="#212121" font-size="10" letter-spacing="1.5">ZOOM IN ↓</text>
+          </svg>
+          <figcaption>Side view of a trellised row. Illustrative.</figcaption>
+        </figure>
+        <div class="notes">
+          <p><strong>Chardonnay.</strong> Bright, citrus-edged and long. In the cool Carneros air it keeps a firm, fresh line, the backbone of three LUMIST wines.</p>
+          <p><strong>Pinot Noir.</strong> Red fruit, texture and a little weight. On its own it gives our summer wine its pale pink colour; with Chardonnay it rounds out our spring wine.</p>
+          <p><strong>Freshness first.</strong> For bubble wine, bright acidity matters more than full ripeness, so the cool, slow Carneros season suits both grapes.</p>
+          <a class="zoomnext" href="#bubble">Zoom in: one bubble</a>
+        </div>
+      </div>
+      <dl class="rowfacts">
+        <div><dt>Grapes</dt><dd>Chardonnay · Pinot Noir</dd></div>
+        <div><dt>Picking</dt><dd><span class="tbc">To be confirmed</span></dd></div>
+        <div><dt>Row spacing</dt><dd><span class="tbc">To be confirmed</span></dd></div>
+        <div><dt>Harvest window</dt><dd><span class="tbc">To be confirmed</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- LEVEL 8 -->
+  <section class="level bubble-sec" id="bubble">
+    <div class="wrap">
+      <div class="lv-head">
+        <div class="kicker">The Bubble<span>1 millimetre</span></div>
+        <div>
+          <h2>And finally, one bubble.</h2>
+          <p class="intro">The bay, the fog, two counties, two grapes. All of it ends here, in one bubble rising inside the bottle, waiting for a quiet room and your own pace.</p>
+        </div>
+      </div>
+      <div class="split">
+        <canvas id="inbottle" aria-label="Animated bubbles rising inside a LUMIST bottle" role="img"></canvas>
+        <div>
+          <p class="manifesto">Bubble wine, on your own terms.</p>
+          <dl class="words">
+            <dt>No ritual</dt><dd>No toast, no special occasion, no one to perform for. Open a bottle on a quiet Tuesday, alone or with one good friend.</dd>
+            <dt>Your pace</dt><dd>Comfortable and unhurried. Sip it slowly, put it back in the fridge, come back tomorrow.</dd>
+            <dt>Our words</dt><dd>We describe our wines by place, season and feeling, in plain English. No borrowed vocabulary.</dd>
+            <dt>Our origin</dt><dd>Beyond ordinary, never far from home. Every bottle traces back to the two sides of Carneros.</dd>
+          </dl>
+          <div class="cta">
+            <a class="btn" href="https://lumist.wine/#wines">Meet the four wines</a>
+            <a class="btn ghost" href="https://lumist.wine/#allocation">Join the allocation list</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>LUMIST · Carneros · Napa &amp; Sonoma, California</span><span>© 2026 LUMIST · Please enjoy responsibly. 21+ only.</span></div></footer>
+
+<script>
+/* discover menu */
+(function(){
+  const btn=document.getElementById("discBtn"),menu=document.getElementById("discMenu"),wrap=document.getElementById("discover");
+  const set=o=>{btn.setAttribute("aria-expanded",String(o));menu.hidden=!o;};
+  btn.addEventListener("click",()=>set(menu.hidden));
+  document.addEventListener("click",e=>{if(!wrap.contains(e.target))set(false);});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){set(false);btn.focus();}});
+  menu.addEventListener("click",e=>{if(e.target.closest("a"))set(false);});
+})();
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* zoom rail: highlight the level in view */
+(function(){
+  const rail=document.getElementById("rail");
+  const links=[...rail.querySelectorAll("a")];
+  const secs=links.map(a=>document.querySelector(a.getAttribute("href")));
+  function update(){
+    const mid=innerHeight*.45;let cur=-1;
+    secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<=mid)cur=i;});
+    links.forEach((a,i)=>{if(i===cur)a.setAttribute("aria-current","step");else a.removeAttribute("aria-current");});
+    const hero=document.querySelector(".hero").getBoundingClientRect();
+    const on=cur<0?hero.bottom>mid:secs[cur].hasAttribute("data-dark");
+    
+  }
+  addEventListener("scroll",update,{passive:true});addEventListener("resize",update);update();
+})();
+
+
+
+
+/* bubbles across the whole page */
+(function(){
+  const cv=document.getElementById("air"),cx=cv.getContext("2d");
+  let W,H,B=[],lastY=scrollY,push=0;
+  function mk(y){const big=Math.random()<.06;return{x:Math.random()*W,y,r:big?6+Math.random()*9:1+Math.random()*3.5,s:.15+Math.random()*.55,p:Math.random()*6,w:.3+Math.random()*.8};}
+  function size(){const d=devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);
+    B=Array.from({length:Math.round(W*H/11000)},()=>mk(Math.random()*H));}
+  function one(b){
+    const x=b.x+Math.sin(b.p)*6*b.w,y=b.y,r=b.r;
+    cx.beginPath();cx.arc(x,y,r,0,7);
+    cx.strokeStyle="rgba(40,40,40,.32)";cx.lineWidth=r>5?1:.8;cx.stroke();
+    if(r>2.5){cx.beginPath();cx.arc(x-r*.35,y-r*.35,r*.22,0,7);cx.fillStyle="rgba(40,40,40,.22)";cx.fill();}
+  }
+  function frame(){
+    cx.clearRect(0,0,W,H);
+    const dy=scrollY-lastY;lastY=scrollY;push=push*.9+dy*.25;
+    for(const b of B){one(b);if(!reduce){b.y-=b.s+Math.max(0,push)*.35*b.s;b.p+=.012;if(b.y<-20){Object.assign(b,mk(H+20));}}}
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  size();frame();addEventListener("resize",()=>{size();if(reduce)frame();});
+})();
+
+/* inside the bottle: one hero bubble plus a stream */
+(function(){
+  const cv=document.getElementById("inbottle"),cx=cv.getContext("2d");let W,H,B=[],hero;
+  function size(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);
+    B=Array.from({length:70},()=>mk(H*.13+Math.random()*H*.85));hero={x:W*.5,y:H*.66,r:Math.min(W,H)*.07,p:0};}
+  function mk(y){const lanes=[.44,.47,.5,.53,.56,.38,.62];const lane=lanes[Math.floor(Math.random()*lanes.length)];return{x:W*lane+(Math.random()-.5)*W*.02,y,r:1+Math.random()*3,s:.4+Math.random()*1.1,p:Math.random()*6};}
+  function bottlePath(){
+    const cxm=W*.5,bw=Math.min(W*.46,H*.36)/2,nw=bw*.32,top=H*.05,neckEnd=H*.24,shoulder=H*.4,bottom=H*.95,r=bw*.18;
+    const pth=new Path2D();
+    pth.moveTo(cxm-nw,top);pth.lineTo(cxm-nw,neckEnd);
+    pth.bezierCurveTo(cxm-nw,neckEnd+(shoulder-neckEnd)*.5,cxm-bw,shoulder-(shoulder-neckEnd)*.35,cxm-bw,shoulder);
+    pth.lineTo(cxm-bw,bottom-r);pth.quadraticCurveTo(cxm-bw,bottom,cxm-bw+r,bottom);
+    pth.lineTo(cxm+bw-r,bottom);pth.quadraticCurveTo(cxm+bw,bottom,cxm+bw,bottom-r);
+    pth.lineTo(cxm+bw,shoulder);
+    pth.bezierCurveTo(cxm+bw,shoulder-(shoulder-neckEnd)*.35,cxm+nw,neckEnd+(shoulder-neckEnd)*.5,cxm+nw,neckEnd);
+    pth.lineTo(cxm+nw,top);pth.closePath();return{pth,top,bw,nw,bottom};}
+  function bubble(x,y,r,a){
+    const g=cx.createRadialGradient(x-r*.35,y-r*.35,r*.1,x,y,r);
+    g.addColorStop(0,`rgba(255,255,255,${.55*a})`);g.addColorStop(.6,`rgba(180,180,180,${.12*a})`);g.addColorStop(1,`rgba(246,246,246,${.35*a})`);
+    cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();
+    cx.strokeStyle=`rgba(246,246,246,${.45*a})`;cx.lineWidth=Math.max(.6,r*.04);cx.stroke();}
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    const bt=bottlePath(),liqTop=H*.13;
+    cx.save();cx.clip(bt.pth);
+    const liq=cx.createLinearGradient(0,0,0,H);liq.addColorStop(0,"rgba(192,192,192,.14)");liq.addColorStop(1,"rgba(192,192,192,.30)");
+    cx.fillStyle=liq;cx.fillRect(0,liqTop,W,H);
+    cx.strokeStyle="rgba(246,246,246,.3)";cx.beginPath();cx.moveTo(0,liqTop);cx.lineTo(W,liqTop);cx.stroke();
+    for(const b of B){bubble(b.x+Math.sin(b.p)*1.2,b.y,b.r,.9);if(!reduce){b.y-=b.s;b.p+=.05;b.r+=.003;if(b.y<liqTop)Object.assign(b,mk(bt.bottom+5));}}
+    const hy=hero.y+Math.sin(hero.p)*6;bubble(hero.x,hy,hero.r,1);
+    cx.restore();
+    /* bottle outline, foil and highlight */
+    cx.strokeStyle="rgba(246,246,246,.55)";cx.lineWidth=1.4;cx.stroke(bt.pth);
+    cx.fillStyle="rgba(116,116,116,.9)";cx.fillRect(W*.5-bt.nw-2,bt.top-4,bt.nw*2+4,H*.09);
+    cx.strokeStyle="rgba(255,255,255,.12)";cx.lineWidth=bt.bw*.08;cx.beginPath();cx.moveTo(W*.5-bt.bw*.62,H*.46);cx.lineTo(W*.5-bt.bw*.62,H*.86);cx.stroke();
+    cx.strokeStyle="rgba(180,180,180,.85)";cx.lineWidth=1;cx.setLineDash([4,4]);cx.strokeRect(hero.x-hero.r*1.5,hy-hero.r*1.5,hero.r*3,hero.r*3);cx.setLineDash([]);
+    cx.fillStyle="rgba(180,180,180,.95)";cx.font="italic 14px 'EB Garamond', Georgia, serif";const lx=W*.5+bt.bw+14;cx.strokeStyle="rgba(180,180,180,.6)";cx.beginPath();cx.moveTo(hero.x+hero.r*1.5,hy);cx.lineTo(lx-4,hy);cx.stroke();cx.fillText("≈ 1 MM, ENLARGED",lx,hy+4);
+    if(!reduce){hero.p+=.02;requestAnimationFrame(draw);}
+  }
+  size();draw();addEventListener("resize",()=>{size();if(reduce)draw();});
+})();
+</script>
+</body>
+</html>
