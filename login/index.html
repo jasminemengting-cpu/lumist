@@ -339,10 +339,14 @@ header{background:#FFFFFF;backdrop-filter:none;z-index:210}
 .terms .cols p{margin:0 0 14px;color:#3a3a3a}
 .terms .cols section{break-inside:avoid-column}
 .terms .draft{margin-top:18px;padding:10px 14px;border:1px dashed var(--muted);font-size:14px;font-style:italic;color:var(--muted)}
+
+/* plain white page: no grain, no bubbles */
+html,body{background:#FFFFFF !important}
+body::after{display:none}
+.panel{border-color:var(--ink)}
 </style>
 </head>
 <body>
-<canvas id="air" aria-hidden="true"></canvas>
 <header>
   <div class="wrap bar">
     <div class="discover" id="discover">
@@ -465,27 +469,7 @@ const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){set(false);btn.focus();}});
   menu.addEventListener("click",e=>{if(e.target.closest("a"))set(false);});
 })();
-/* bubbles across the whole page */
-(function(){
-  const cv=document.getElementById("air"),cx=cv.getContext("2d");
-  let W,H,B=[],lastY=scrollY,push=0;
-  function mk(y){const big=Math.random()<.06;return{x:Math.random()*W,y,r:big?6+Math.random()*9:1+Math.random()*3.5,s:.15+Math.random()*.55,p:Math.random()*6,w:.3+Math.random()*.8};}
-  function size(){const d=devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);
-    B=Array.from({length:Math.round(W*H/11000)},()=>mk(Math.random()*H));}
-  function one(b){
-    const x=b.x+Math.sin(b.p)*6*b.w,y=b.y,r=b.r;
-    cx.beginPath();cx.arc(x,y,r,0,7);
-    cx.strokeStyle="rgba(40,40,40,.32)";cx.lineWidth=r>5?1:.8;cx.stroke();
-    if(r>2.5){cx.beginPath();cx.arc(x-r*.35,y-r*.35,r*.22,0,7);cx.fillStyle="rgba(40,40,40,.22)";cx.fill();}
-  }
-  function frame(){
-    cx.clearRect(0,0,W,H);
-    const dy=scrollY-lastY;lastY=scrollY;push=push*.9+dy*.25;
-    for(const b of B){one(b);if(!reduce){b.y-=b.s+Math.max(0,push)*.35*b.s;b.p+=.012;if(b.y<-20){Object.assign(b,mk(H+20));}}}
-    if(!reduce)requestAnimationFrame(frame);
-  }
-  size();frame();addEventListener("resize",()=>{size();if(reduce)frame();});
-})();
+
 
 /* login page */
 (function(){
