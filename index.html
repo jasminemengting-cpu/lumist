@@ -281,6 +281,27 @@ footer{border-top:3px double var(--ink)}
 
 /* white masthead bar */
 header{background:#FFFFFF;backdrop-filter:none;z-index:210}
+
+/* cart drawer */
+.cart-scrim{position:fixed;inset:0;background:rgba(20,20,20,.38);z-index:300;opacity:0;transition:opacity .3s}
+.cart-scrim.on{opacity:1}
+.cart{position:fixed;top:0;right:0;height:100%;width:min(420px,100vw);background:#FFFFFF;color:var(--ink);z-index:310;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.7,.2,1);box-shadow:-18px 0 40px rgba(0,0,0,.12);border-left:1px solid var(--ink);visibility:hidden}
+.cart.on{transform:none;visibility:visible}
+@media (prefers-reduced-motion:reduce){.cart,.cart-scrim{transition:none}}
+.cart-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:3px double var(--ink)}
+.cart-head h2{font-family:var(--display);font-size:28px;font-weight:400}
+.cart-x{border:0;background:transparent;width:40px;height:40px;display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.cart-x:hover{background:var(--mist)}
+.cart-body{flex:1;overflow:auto;padding:48px 28px;display:grid;align-content:start;justify-items:center;text-align:center;gap:14px}
+.cart-empty-ico{color:var(--muted)}
+.cart-empty{font-family:var(--display);font-size:24px;font-style:italic}
+.cart-note{color:var(--muted);max-width:30ch}
+.cart-foot{padding:20px 24px 26px;border-top:1px solid var(--line);display:grid;gap:10px}
+.cart-sub{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--sc);letter-spacing:.06em;font-size:17px}
+.cart-sub b{font-family:var(--body);font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0}
+.cart-small{font-size:14px;font-style:italic;color:var(--muted);margin-bottom:6px}
+.cart-go{justify-content:center;width:100%}
 </style>
 </head>
 <body>
@@ -301,12 +322,33 @@ header{background:#FFFFFF;backdrop-filter:none;z-index:210}
       <a href="https://lumist.wine/myaccount/" class="icon" aria-label="Log in" title="Log in">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M4.5 20c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </a>
-      <a href="https://lumist.wine/cart/" class="icon" aria-label="Shopping cart" title="Shopping cart">
+      <a href="https://lumist.wine/cart/" class="icon" id="cartBtn" aria-label="Shopping cart" title="Shopping cart" aria-haspopup="dialog" aria-controls="cart" aria-expanded="false">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </a>
     </div>
   </div>
 </header>
+<div class="cart-scrim" id="cartScrim" hidden></div>
+<aside class="cart" id="cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle" aria-hidden="true" tabindex="-1">
+  <div class="cart-head">
+    <h2 id="cartTitle">Your bag</h2>
+    <button type="button" class="cart-x" id="cartClose" aria-label="Close bag">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-body">
+    <svg class="cart-empty-ico" viewBox="0 0 24 24" width="44" height="44" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+    <p class="cart-empty">Your bag is empty.</p>
+    <p class="cart-note">The first release of LUMIST bubble wine is not open for orders yet. Join the allocation list to be first in line when it is.</p>
+  </div>
+  <div class="cart-foot">
+    <div class="cart-sub"><span>Subtotal</span><b>$0.00</b></div>
+    <p class="cart-small">Shipping and taxes are calculated at checkout.</p>
+    <a class="btn cart-go" href="https://lumist.wine/cart/">Go to cart</a>
+    <button type="button" class="btn ghost cart-go" id="cartKeep">Continue browsing</button>
+  </div>
+</aside>
+
 
 <nav aria-label="Zoom level">
   <ol class="rail" id="rail">
@@ -756,6 +798,29 @@ header{background:#FFFFFF;backdrop-filter:none;z-index:210}
 <footer><div class="wrap"><span>LUMIST · Carneros · Napa &amp; Sonoma, California</span><span>© 2026 LUMIST · Please enjoy responsibly. 21+ only.</span></div></footer>
 
 <script>
+
+/* cart drawer */
+(function(){
+  const btn=document.getElementById("cartBtn"),cart=document.getElementById("cart"),scrim=document.getElementById("cartScrim");
+  let last=null;
+  function open(e){if(e)e.preventDefault();last=document.activeElement;scrim.hidden=false;
+    requestAnimationFrame(()=>{scrim.classList.add("on");cart.classList.add("on");});
+    cart.setAttribute("aria-hidden","false");btn.setAttribute("aria-expanded","true");document.body.style.overflow="hidden";
+    setTimeout(()=>document.getElementById("cartClose").focus(),50);}
+  function close(){scrim.classList.remove("on");cart.classList.remove("on");cart.setAttribute("aria-hidden","true");btn.setAttribute("aria-expanded","false");
+    document.body.style.overflow="";setTimeout(()=>{scrim.hidden=true;},300);if(last)last.focus();}
+  btn.addEventListener("click",open);
+  document.getElementById("cartClose").addEventListener("click",close);
+  document.getElementById("cartKeep").addEventListener("click",close);
+  scrim.addEventListener("click",close);
+  document.addEventListener("keydown",e=>{
+    if(!cart.classList.contains("on"))return;
+    if(e.key==="Escape")close();
+    if(e.key==="Tab"){const f=[...cart.querySelectorAll("a,button")];const a=f[0],z=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}
+  });
+})();
+
 /* discover menu */
 (function(){
   const btn=document.getElementById("discBtn"),menu=document.getElementById("discMenu"),wrap=document.getElementById("discover");
