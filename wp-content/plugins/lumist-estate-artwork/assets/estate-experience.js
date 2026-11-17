@@ -29,6 +29,7 @@
   let airWidth = 0, airHeight = 0, ambient = [];
   let width = 0, height = 0, frame = 0, previous = 0, clock = 0;
   let visible = false, paused = motion.matches;
+  let bubblesOff = false;   // the Hide / Show bubbles button
   // Scrolling stirs the wine: bubbles speed up, wobble and drift, then settle.
   let stir = 0, lift = 0, drift = 0, lastScrollY = scrollY, lastScrollT = performance.now();
   addEventListener('scroll', () => {
@@ -118,6 +119,7 @@
   function drawAir() {
     if (!airCtx) return;
     airCtx.clearRect(0, 0, airWidth, airHeight);
+    if (bubblesOff) return;
     for (const bubble of ambient) {
       const progress = (bubble.phase + (clock + lift) * bubble.rate) % 1;
       const y = airHeight + 24 - progress * (airHeight + 48);
@@ -171,7 +173,7 @@
     liquid.addColorStop(.65, 'rgba(211,208,189,.055)');
     liquid.addColorStop(1, 'rgba(211,208,189,.018)');
     ctx.fillStyle = liquid; ctx.fillRect(0, height * .185, width, bottom);
-    for (const bubble of bubbles) {
+    for (const bubble of (bubblesOff ? [] : bubbles)) {
       const progress = (bubble.phase + (clock + lift * 1.4) * bubble.rate) % 1;
       const rise = progress * progress * .18 + progress * .82;
       const y = bottom - rise * (bottom - height * .19);
@@ -198,7 +200,7 @@
   }
   function tick(now) {
     frame = 0;
-    if (paused || (!visible && !airCtx) || document.hidden) { previous = 0; return; }
+    if (paused || bubblesOff || (!visible && !airCtx) || document.hidden) { previous = 0; return; }
     if (previous) {
       const dt = Math.min((now - previous) / 1000, .05);
       clock += dt;
@@ -211,10 +213,11 @@
   }
   function sync() {
     cancelAnimationFrame(frame); frame = 0; previous = 0;
-    button.textContent = paused ? 'Play bubble motion' : 'Pause bubble motion';
-    if (ambientButton) ambientButton.textContent = paused ? 'Play bubble motion' : 'Pause bubble motion';
+    const label = bubblesOff ? 'Show bubbles' : 'Hide bubbles';
+    [button, ambientButton].forEach(b => { if (!b) return; b.textContent = label; b.setAttribute('aria-pressed', String(bubblesOff)); });
+    if (air) { air.style.transition = 'opacity .5s ease'; air.style.opacity = bubblesOff ? '0' : '1'; }
     drawAir(); draw();
-    if (!paused && (visible || airCtx) && !document.hidden) frame = requestAnimationFrame(tick);
+    if (!paused && !bubblesOff && (visible || airCtx) && !document.hidden) frame = requestAnimationFrame(tick);
   }
   function resize() {
     const box = canvas.getBoundingClientRect();
@@ -224,10 +227,11 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw();
   }
   button.hidden = false;
-  button.addEventListener('click', () => { paused = !paused; sync(); });
+  const toggle = () => { bubblesOff = !bubblesOff; try { sessionStorage.setItem('lumist-bubbles-off', bubblesOff ? '1' : ''); } catch (e) {} sync(); };
+  button.addEventListener('click', toggle);
   if (ambientButton) {
     ambientButton.hidden = false;
-    ambientButton.addEventListener('click', () => { paused = !paused; sync(); });
+    ambientButton.addEventListener('click', toggle);
   }
   function resizeAir() {
     if (!airCtx) return;
@@ -250,5 +254,6 @@
   } else { visible = true; }
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
   else addEventListener('resize', resize);
+  try { bubblesOff = sessionStorage.getItem('lumist-bubbles-off') === '1'; } catch (e) {}
   collectBlocks(); resizeAir(); resize(); sync();
 })();
