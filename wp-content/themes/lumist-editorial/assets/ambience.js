@@ -77,12 +77,12 @@
     const space = reverb(); const wet = ctx.createGain(); wet.gain.value = .28; space.connect(wet); wet.connect(master);
 
     // Wind off the bay: brown noise, low-passed, swelling slowly.
-    windFilter = ctx.createBiquadFilter(); windFilter.type = 'lowpass'; windFilter.frequency.value = 520; windFilter.Q.value = .6;
-    windGain = ctx.createGain(); windGain.gain.value = .32;
+    windFilter = ctx.createBiquadFilter(); windFilter.type = 'lowpass'; windFilter.frequency.value = 360; windFilter.Q.value = .6;
+    windGain = ctx.createGain(); windGain.gain.value = .17;
     const windPan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
     loop(noiseBuffer('brown', 8)).connect(windFilter); windFilter.connect(windGain);
     if (windPan) { windGain.connect(windPan); windPan.connect(master); lfo(.031, .55, windPan.pan); } else windGain.connect(master);
-    lfo(.07, 260, windFilter.frequency); lfo(.043, .12, windGain.gain, 3);
+    lfo(.05, 140, windFilter.frequency); lfo(.035, .05, windGain.gain, 3);
 
     // Gust whistle through the trellis wires.
     const whistle = ctx.createBiquadFilter(); whistle.type = 'bandpass'; whistle.frequency.value = 1150; whistle.Q.value = 9;
@@ -178,8 +178,8 @@
     if (!on || !ctx || reduce.matches) return;
     gust = Math.min(1, gust + v * .5);
     const t = ctx.currentTime;
-    windGain.gain.setTargetAtTime(.32 + gust * .22, t, .15);
-    windGain.gain.setTargetAtTime(.32, t + .5, .9);
+    windGain.gain.setTargetAtTime(.17 + gust * .08, t, .2);
+    windGain.gain.setTargetAtTime(.17, t + .5, 1.1);
     if (rustleFn && gust > .35 && now - lastRustle > 1800) { lastRustle = now; rustleFn(gust); }
     setTimeout(() => { gust *= .5; }, 400);
   }, { passive: true });
