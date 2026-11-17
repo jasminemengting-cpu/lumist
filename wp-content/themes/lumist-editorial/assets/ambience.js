@@ -10,6 +10,7 @@
   if (!AC) return;
   const ME = document.currentScript && document.currentScript.src;
   const PIANO_BASE = ME ? new URL('piano/', ME).href : 'piano/';
+  const PIANO_ON = false;   // piano paused for now; set to true to bring it back
   const KEY = 'lumist-ambience';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let ctx = null, master = null, on = false, birdTimer = 0, waveTimer = 0, gust = 0;
@@ -43,7 +44,7 @@
   const label = btn.querySelector('.label');
   function paint() {
     btn.setAttribute('aria-pressed', String(on));
-    btn.setAttribute('aria-label', on ? 'Turn off the sound of Carneros' : 'Play the sound of Carneros: wind, bay water, marsh birds and a quiet piano');
+    btn.setAttribute('aria-label', on ? 'Turn off the sound of Carneros' : 'Play the sound of Carneros: wind, bay water and marsh birds');
     label.textContent = on ? 'Sound of Carneros · on' : 'Sound of Carneros';
   }
   paint();
@@ -51,7 +52,7 @@
   const credit = document.createElement('p');
   credit.className = 'lumist-ambience-credit';
   credit.innerHTML = 'Piano: <a href="https://archive.org/details/SalamanderGrandPianoV3" rel="noopener">Salamander Grand Piano</a>, Alexander Holm, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>';
-  document.body.appendChild(credit);
+  if (PIANO_ON) document.body.appendChild(credit);
 
   // ---------- building blocks ----------
   function noiseBuffer(kind, seconds = 6) {
@@ -327,7 +328,7 @@
     master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.setTargetAtTime(.55, ctx.currentTime, .9);
     clearTimeout(birdTimer); if (birdFn) birdTimer = setTimeout(birdFn, 2500);
-    clearTimeout(pianoTimer); if (pianoFn) { loadSamplesFn && loadSamplesFn(); pianoTimer = setTimeout(pianoFn, 3500); }
+    clearTimeout(pianoTimer); if (PIANO_ON && pianoFn) { loadSamplesFn && loadSamplesFn(); pianoTimer = setTimeout(pianoFn, 3500); }
     try { localStorage.setItem(KEY, 'on'); } catch (e) {}
   }
   function stop(remember = true) {
