@@ -30,6 +30,33 @@
   let width = 0, height = 0, frame = 0, previous = 0, clock = 0;
   let visible = false, paused = motion.matches;
   let bubblesOff = false;   // the Hide / Show bubbles button
+  // Click the bottle: the LUMIST logo slowly appears on the glass; click again and it fades away.
+  let logoOn = false, logoAlpha = 0;
+  try { logoOn = sessionStorage.getItem('lumist-bottle-logo') === '1'; logoAlpha = logoOn ? 1 : 0; } catch (e) {}
+  const logoFont = (getComputedStyle(document.documentElement).getPropertyValue('--display').trim()) || 'Georgia, serif';
+  function drawLogo(mid) {
+    if (logoAlpha <= .001) return;
+    const a = logoAlpha * logoAlpha * (3 - 2 * logoAlpha);          // ease in and out
+    const target = height * .2;                                     // fits inside the body glass
+    let size = height * .05;
+    ctx.save();
+    ctx.font = `400 ${size}px ${logoFont}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = `${size * .32}px`;
+    const w = ctx.measureText('LUMIST').width;
+    if (w > target) { size *= target / w; ctx.font = `400 ${size}px ${logoFont}`; if ('letterSpacing' in ctx) ctx.letterSpacing = `${size * .32}px`; }
+    const shift = ('letterSpacing' in ctx) ? size * .16 : 0;        // trailing spacing would push it right
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const y = height * .66;
+    ctx.shadowColor = `rgba(0,0,0,${.55 * a})`; ctx.shadowBlur = size * .25;
+    ctx.fillStyle = `rgba(236,236,230,${.88 * a})`;
+    ctx.fillText('LUMIST', mid + shift, y);
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = `rgba(236,236,230,${.35 * a})`; ctx.lineWidth = .7;
+    const rule = Math.min(target, height * .12) / 2;
+    ctx.beginPath(); ctx.moveTo(mid - rule, y - size * .95); ctx.lineTo(mid + rule, y - size * .95);
+    ctx.moveTo(mid - rule, y + size * .95); ctx.lineTo(mid + rule, y + size * .95); ctx.stroke();
+    ctx.restore();
+  }
   // Scrolling stirs the wine: bubbles speed up, wobble and drift, then settle.
   let stir = 0, lift = 0, drift = 0, lastScrollY = scrollY, lastScrollT = performance.now();
   addEventListener('scroll', () => {
@@ -213,6 +240,7 @@
       // A quiet outline remains while the pencil texture loads.
       ctx.strokeStyle = 'rgba(216,224,210,.24)'; ctx.lineWidth = .8; ctx.stroke(bottle);
     }
+    drawLogo(mid);
     const vignette = ctx.createRadialGradient(width * .5, height * .45, width * .08, width * .5, height * .45, height * .75);
     vignette.addColorStop(0, 'rgba(0,0,0,0)'); vignette.addColorStop(1, 'rgba(0,0,0,.25)');
     ctx.fillStyle = vignette; ctx.fillRect(0, 0, width, height);
@@ -228,6 +256,8 @@
       stir *= Math.pow(.12, dt);        // settles in about a second
       drift *= Math.pow(.2, dt);
       if (stir < .002) stir = 0;
+      const goal = logoOn ? 1 : 0;           // about 1.8 s to fade fully in or out
+      if (logoAlpha !== goal) logoAlpha = goal > logoAlpha ? Math.min(1, logoAlpha + dt / 1.8) : Math.max(0, logoAlpha - dt / 1.8);
     }
     previous = now; if (!bubblesOff) drawAir(); if (visible) draw(); frame = requestAnimationFrame(tick);
   }
@@ -246,6 +276,13 @@
     canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw();
   }
+  canvas.style.cursor = 'pointer';
+  canvas.title = 'Click the bottle';
+  canvas.addEventListener('click', () => {
+    logoOn = !logoOn;
+    try { sessionStorage.setItem('lumist-bottle-logo', logoOn ? '1' : ''); } catch (e) {}
+    if (paused || document.hidden) { logoAlpha = logoOn ? 1 : 0; draw(); }
+  });
   button.hidden = false;
   const toggle = () => { bubblesOff = !bubblesOff; try { sessionStorage.setItem('lumist-bubbles-off', bubblesOff ? '1' : ''); } catch (e) {} sync(); };
   button.addEventListener('click', toggle);
