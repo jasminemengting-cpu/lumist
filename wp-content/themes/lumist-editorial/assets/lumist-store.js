@@ -15,7 +15,7 @@
     62: { name: 'Autumn 2024', note: 'Autumn · Poised', grapes: '100% Chardonnay', img: 'lumist-autumn-placeholder.png' },
     64: { name: 'Winter 2024', note: 'Winter · Depth', grapes: '100% Chardonnay', img: 'lumist-winter-placeholder.png' },
   };
-  const imgSrc = p => link('wp-content/uploads/2026/11/' + p.img + '?v=pencil');
+  const imgSrc = p => link('wp-content/uploads/2026/11/' + p.img + '?v=black');
   const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
