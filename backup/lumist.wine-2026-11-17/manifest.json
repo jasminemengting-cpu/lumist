@@ -1,0 +1,421 @@
+{
+ "captured": "2026-11-17",
+ "origin": "https://lumist.wine",
+ "note": "Front-end snapshot (rendered HTML, CSS, JS, images) captured from a browser. Server-side PHP, database and wp-admin are not included.",
+ "files": [
+  {
+   "source": "https://lumist.wine/a-different-kind-of-attention/",
+   "file": "a-different-kind-of-attention/index.html",
+   "bytes": 41667,
+   "sha256": "12136865bb9b4efefb4acbc5d2e7622c5f5298db86144c4d99c54f1d393d1cd2"
+  },
+  {
+   "source": "https://lumist.wine/cart/",
+   "file": "cart/index.html",
+   "bytes": 89901,
+   "sha256": "a50f89ba6b7496be5addb7e75f2b76006afedf69809cc72335034b4f1d7055c1"
+  },
+  {
+   "source": "https://lumist.wine/estate/",
+   "file": "estate/index.html",
+   "bytes": 64143,
+   "sha256": "68b1b2107ecae539e9f556734e789dbff0e4fad24d5857417f3ed9d8e6842a27"
+  },
+  {
+   "source": "https://lumist.wine/",
+   "file": "index.html",
+   "bytes": 37644,
+   "sha256": "b14eb0a4aab482e7da29813aee05c2fb88a2ba5293cf9f74a40abea90db2c29f"
+  },
+  {
+   "source": "https://lumist.wine/journal/",
+   "file": "journal/index.html",
+   "bytes": 42161,
+   "sha256": "e958145a7b5e8fe69beaa1d6434efc53694f053e1276518ffaf8c8ed4758001a"
+  },
+  {
+   "source": "https://lumist.wine/myaccount/",
+   "file": "myaccount/index.html",
+   "bytes": 37487,
+   "sha256": "5de5a53a73404c0736790deecfe9cf7d9f666ce25cb28b8711ef035e26c9b2bd"
+  },
+  {
+   "source": "https://lumist.wine/myaccount/?lumist_signup=1",
+   "file": "myaccount/index.lumist_signup=1.html",
+   "bytes": 49679,
+   "sha256": "e58ffaeaee094f518e009b71d37f0a06bd231dba0679d6ea737e3e00db84d967"
+  },
+  {
+   "source": "https://lumist.wine/myaccount/lost-password/",
+   "file": "myaccount/lost-password/index.html",
+   "bytes": 38101,
+   "sha256": "185c12c21adb0c87059da20dd94f13e6898b07df8548bb6cd9b3940930f10345"
+  },
+  {
+   "source": "https://lumist.wine/no-special-occasion/",
+   "file": "no-special-occasion/index.html",
+   "bytes": 41566,
+   "sha256": "f98d817ff0efc6203983e5a5491123a15741be0ddbdd98bb44ba16bdf7cc96e9"
+  },
+  {
+   "source": "https://lumist.wine/the-space-between-notes/",
+   "file": "the-space-between-notes/index.html",
+   "bytes": 41607,
+   "sha256": "073eda68ba21286f740f6e2f24ac79436fca0dd16dca4043008b1c87a0300bed"
+  },
+  {
+   "source": "https://lumist.wine/wp-admin/js/password-strength-meter.min.js?ver=7.1.4",
+   "file": "wp-admin/js/password-strength-meter.min.js",
+   "bytes": 1123,
+   "sha256": "fcbe9e9ff2d1c20cab10bf43dc49914e188b44ae21f34257b4a0ef5cae90f7ac"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-accounts/assets/accounts.css?ver=1793729938",
+   "file": "wp-content/plugins/lumist-accounts/assets/accounts.css",
+   "bytes": 936,
+   "sha256": "ed9f7974f4d78dc59929bb18f1afb8e33933b52f98850e1dd3cad78252e9f2de"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-commerce/assets/commerce.css?ver=1793637255",
+   "file": "wp-content/plugins/lumist-commerce/assets/commerce.css",
+   "bytes": 4088,
+   "sha256": "ab3817828fbf674b202daa50f2dab208e9a35d13446d20588af4a192da0079d1"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-commerce/assets/commerce.js?ver=1793637255",
+   "file": "wp-content/plugins/lumist-commerce/assets/commerce.js",
+   "bytes": 3023,
+   "sha256": "9510fccba4384db6fc83050a9a7c4279f304bdbf18689b99112b811b50220cd0"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-art/02-marsh-and-estate-map-pencil-transparent.webp",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-art/02-marsh-and-estate-map-pencil-transparent.webp",
+   "bytes": 367686,
+   "sha256": "d491d4ff583fc60c7d1f65fa5b190398467c2c436744e0583c85ad5b53a938f0"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-art/03-vineyard-row-pencil-transparent.webp",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-art/03-vineyard-row-pencil-transparent.webp",
+   "bytes": 483682,
+   "sha256": "3b8edbf621a51a0a16fbf987d7629da069fc5641d619b86065c47b600e31a8af"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-art/04-vineyard-to-winery-pencil-transparent.webp",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-art/04-vineyard-to-winery-pencil-transparent.webp",
+   "bytes": 585622,
+   "sha256": "a307990c2f0211fba491c9deeafe180e9dafda17b3e3386ac7b54af89a7489a2"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-art/05-two-counties.webp",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-art/05-two-counties.webp",
+   "bytes": 55270,
+   "sha256": "2715d491b5072206c53da757e80ba7f769f54df11916d83a32b6c4f37370f4a6"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-art/06-regional-map-pencil-transparent.webp",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-art/06-regional-map-pencil-transparent.webp",
+   "bytes": 412100,
+   "sha256": "579bb68b181f88a2893f3c94e8959c2cc5990d093f7597cc440500e1b2e2b38f"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-art/07-hand-lettered-chapter-strip-transparent.webp",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-art/07-hand-lettered-chapter-strip-transparent.webp",
+   "bytes": 330194,
+   "sha256": "1d2ae8ccb6bf9a3980af0a626fcdf6df4a4d7cc3c1fb786cae0392ca69cbccf7"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-artwork.css?ver=1794848447",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-artwork.css",
+   "bytes": 3036,
+   "sha256": "a306b9d0b5dd40e658df31a6d4cf25a061c762b3c5f87b63912723a18964f663"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/lumist-estate-artwork/assets/estate-experience.js?ver=1794848447",
+   "file": "wp-content/plugins/lumist-estate-artwork/assets/estate-experience.js",
+   "bytes": 9870,
+   "sha256": "5c731a2fb82da6d7a378560da8de850bf6a3b5362311b833ab79bb5d7e87df78"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/css/select2.css?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/css/select2.css",
+   "bytes": 14789,
+   "sha256": "ec69cea4818d79aff85cdfb305265a75ca2823bd5feeb36d2bff67fa647414d8"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/css/woocommerce-layout.css",
+   "bytes": 20154,
+   "sha256": "c52dc19e1f84684beb82391dacc133a11400f1c351dc2c456fb38a1e22ec8ddd"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css",
+   "bytes": 8655,
+   "sha256": "262c2912a618e3aa1af029cba7dde16245c35dd550bb10fa72c74b435456097a"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/css/woocommerce.css?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/css/woocommerce.css",
+   "bytes": 92973,
+   "sha256": "0c0a851d96173cf0bd954542ac59d9bcaeb6b931e2f686fa9f9e344a9a079f0e"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/fonts/WooCommerce.ttf",
+   "file": "wp-content/plugins/woocommerce/assets/fonts/WooCommerce.ttf",
+   "bytes": 14748,
+   "sha256": "47e784354fd51e5ba8b1a19bea178321ee4f8b538c1206a950eb046537c9ef1e"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/fonts/WooCommerce.woff",
+   "file": "wp-content/plugins/woocommerce/assets/fonts/WooCommerce.woff",
+   "bytes": 8084,
+   "sha256": "ce3e2202d511bf6c7183e5870916f6cfb064da615d696d82cab65c653e5a2515"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/fonts/WooCommerce.woff2",
+   "file": "wp-content/plugins/woocommerce/assets/fonts/WooCommerce.woff2",
+   "bytes": 6488,
+   "sha256": "5c5f9c17b7b1ba8ca4da3e22f750a8f825005fdecbd0a26bdaf5c55778ce9bba"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/amex.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/amex.svg",
+   "bytes": 4662,
+   "sha256": "faecb48f0318cf0a92ed740f6eec18dc9b7096a7e08242dc8298893bcf29d6e6"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/diners.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/diners.svg",
+   "bytes": 804,
+   "sha256": "8d00d9846c8e47ce2052cb6bd0cfbed4d553ee584175b98c453d1e8a5d839645"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/discover.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/discover.svg",
+   "bytes": 2185,
+   "sha256": "6abfc61ad3b67274e9a23a62a3b7417ad9fdc00b97e805e8114f9170b993973e"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/jcb.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/jcb.svg",
+   "bytes": 2800,
+   "sha256": "a81dd60c2dc3a484c46b77946b2561934ec2c7fc927b0e8707a6b322a853c80b"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/laser.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/laser.svg",
+   "bytes": 3110,
+   "sha256": "de37371d7bbdbc25449e8e1a0c6f86678b309f85c244398b076d31fcb8ede714"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/maestro.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/maestro.svg",
+   "bytes": 6797,
+   "sha256": "f46a2fb9423bf396094b377a505a4c97c0ab23fc3faee084ec7eba5f830d4291"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/mastercard.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/mastercard.svg",
+   "bytes": 4634,
+   "sha256": "44f162522d63ac5fc90fccbda937e2c779cd6f9ec25892d69f46a1536379050e"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/credit-cards/visa.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/credit-cards/visa.svg",
+   "bytes": 1359,
+   "sha256": "3c3b0bdf44b5b9b22082ee4e07afb1d691699b9455d338fd0d9a9f931f7b7923"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/images/icons/loader.svg",
+   "file": "wp-content/plugins/woocommerce/assets/images/icons/loader.svg",
+   "bytes": 158,
+   "sha256": "3322cc0684ba020e242412022bbaa2be0abfe3af9fe9e6ef50a19fb3517c415f"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/account-i18n.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/account-i18n.min.js",
+   "bytes": 188,
+   "sha256": "3216784d13e285b701c2b378b13c9482990e880c6552dec7690b07e1528f9fd4"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js",
+   "bytes": 4350,
+   "sha256": "fca8dd4ee9c93f33dc3149e2c78aec8a28c54036faaf19c7b0ac9ca32293c070"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/address-i18n.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/address-i18n.min.js",
+   "bytes": 2683,
+   "sha256": "357a5b2dd948c91036464b74fe6bf9aeedbcf1b8ec8c25701d0305554341039f"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/cart.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/cart.min.js",
+   "bytes": 9970,
+   "sha256": "9e7d713d8fa95d2104489ab92b7069778ef15ab73aa770fd8199368aaa36fdf7"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/country-select.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/country-select.min.js",
+   "bytes": 3494,
+   "sha256": "384304a1cf87ea56479245f2f13a8c1b18a3110c4d24bc0c3ef27cb232d00715"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/lost-password.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/lost-password.min.js",
+   "bytes": 132,
+   "sha256": "5833dd71a9eb8430bbcbcccb6c37506b5b203fd3d5331da60c06ef2b1ea7fe1a"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/order-attribution.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/order-attribution.min.js",
+   "bytes": 2512,
+   "sha256": "bcd218b97a4122932d9bd546a2b0ab1b5f6df6fc0aed3fd108ba24fe0828d81d"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/password-strength-meter.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/password-strength-meter.min.js",
+   "bytes": 2190,
+   "sha256": "b43b70f07792d1a6474a615ff9a1e2dd4742e6e66a06f5c00a5d5b81808370df"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/frontend/woocommerce.min.js",
+   "bytes": 4688,
+   "sha256": "6eada52389868e53422901a237587d910cdf8d5ebbf4edcc801e220015274335"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js?ver=2.7.0-wc.11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/jquery-blockui/jquery.blockUI.min.js",
+   "bytes": 9591,
+   "sha256": "26c6026801322acab8a9cc4b75e0197926a46a007dfbdc06a52b3ab714385098"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js?ver=2.1.4-wc.11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/js-cookie/js.cookie.min.js",
+   "bytes": 1720,
+   "sha256": "e4dc712653424d34b8dffe19211fa1ee3cc3e8a7538480684183e899cb89697e"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/selectWoo/selectWoo.full.min.js?ver=1.0.9-wc.11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/selectWoo/selectWoo.full.min.js",
+   "bytes": 77854,
+   "sha256": "3aff100864ed10548cbace4c87543c2546722e76fcf25259c7ee2ada03da05be"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js?ver=11.3.0",
+   "file": "wp-content/plugins/woocommerce/assets/js/sourcebuster/sourcebuster.min.js",
+   "bytes": 14996,
+   "sha256": "f92791d9c2a5debc802e5fb65f08808cc6c473357a88507296f866a581b51c89"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/adaptation.css?ver=1794584749",
+   "file": "wp-content/themes/lumist-editorial/assets/adaptation.css",
+   "bytes": 5347,
+   "sha256": "b0bfcb65648f183b1bf436964b635076c5d940285cf441de701aeab96298d0fd"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/images/glass.jpg",
+   "file": "wp-content/themes/lumist-editorial/assets/images/glass.jpg",
+   "bytes": 880624,
+   "sha256": "d834874b1e70f4d80f085397e5345695d66c009f6c85833a7814506dfeb47c81"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/images/harvest.jpg",
+   "file": "wp-content/themes/lumist-editorial/assets/images/harvest.jpg",
+   "bytes": 307401,
+   "sha256": "08ac11c9a6027daa662d5d6aa1c3b9810294c2a98637c5e409e5ce0b91353e98"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/images/piano.jpg",
+   "file": "wp-content/themes/lumist-editorial/assets/images/piano.jpg",
+   "bytes": 334618,
+   "sha256": "65be6008ef4e3ce5e321d100c490c1c0f00fe1729b3fc6e0e5e6032259b2c184"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/prototype-estate.css?ver=1794584749",
+   "file": "wp-content/themes/lumist-editorial/assets/prototype-estate.css",
+   "bytes": 21201,
+   "sha256": "dd7cbb7293471f9f97ffbfcd71f581eb524a90a434f4b8e8494033f2845082aa"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/prototype-home.css?ver=1794584749",
+   "file": "wp-content/themes/lumist-editorial/assets/prototype-home.css",
+   "bytes": 30084,
+   "sha256": "0358c10dccd9bd3d835e920bd022d1a8eb7ee7897255629d69d7ee6b95df2081"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/prototype-journal.css?ver=1794584749",
+   "file": "wp-content/themes/lumist-editorial/assets/prototype-journal.css",
+   "bytes": 26438,
+   "sha256": "7d8e40124c9dafe5bd62c65876d3d322eeae55135f5be9fe4eea37ed67d046d4"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/site.css?ver=1794584749",
+   "file": "wp-content/themes/lumist-editorial/assets/site.css",
+   "bytes": 8095,
+   "sha256": "83085174cfd62adef9f547783312db666c532adc35db43a7cd59e560b0b394b0"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/themes/lumist-editorial/assets/site.js?ver=1794584749",
+   "file": "wp-content/themes/lumist-editorial/assets/site.js",
+   "bytes": 561,
+   "sha256": "0870e2c30950d642d68c8b7f2d3f360db417c807e7389707b5298b09c63d64d8"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/uploads/2026/11/lumist-blanc-de-blancs-placeholder.png",
+   "file": "wp-content/uploads/2026/11/lumist-blanc-de-blancs-placeholder.png",
+   "bytes": 17422,
+   "sha256": "2dd9afe1fdbcb1e7bb09ce64d5d4c06ed65bff0c779c974ae9ce8c31982ac60e"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/uploads/2026/11/lumist-brut-nature-placeholder.png",
+   "file": "wp-content/uploads/2026/11/lumist-brut-nature-placeholder.png",
+   "bytes": 17044,
+   "sha256": "df6a583455ab5184b18db5806eabd68c8ceff06812556e43ce891bee8ab72644"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/uploads/2026/11/lumist-brut-placeholder.png",
+   "file": "wp-content/uploads/2026/11/lumist-brut-placeholder.png",
+   "bytes": 15806,
+   "sha256": "47f77f69cdfb89af4b302232c51ef51167626e6f0a3b92fe2b3dd690b35d37ed"
+  },
+  {
+   "source": "https://lumist.wine/wp-content/uploads/2026/11/lumist-brut-rose-placeholder.png",
+   "file": "wp-content/uploads/2026/11/lumist-brut-rose-placeholder.png",
+   "bytes": 17131,
+   "sha256": "2670c3b78414643128823598974b5acd5a04ade61e325538e83a6a8f86ac5617"
+  },
+  {
+   "source": "https://lumist.wine/wp-includes/js/dist/hooks.min.js?ver=f0f188028580e8dc1255",
+   "file": "wp-includes/js/dist/hooks.min.js",
+   "bytes": 5107,
+   "sha256": "fc774906082b59dedcfc55b8ef127783b6d056578ff4586a8ebbdb81bbe286f1"
+  },
+  {
+   "source": "https://lumist.wine/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216",
+   "file": "wp-includes/js/dist/i18n.min.js",
+   "bytes": 5791,
+   "sha256": "5083905862c2b7aa8a84c4f2313d359d2288fb25fbe1ff577fa7325eff2ed2d9"
+  },
+  {
+   "source": "https://lumist.wine/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+   "file": "wp-includes/js/jquery/jquery-migrate.min.js",
+   "bytes": 13577,
+   "sha256": "5274f11e6fb32ae0cf2dfb9f8043272865c397a7c4223b4cfa7d50ea52fbde89"
+  },
+  {
+   "source": "https://lumist.wine/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+   "file": "wp-includes/js/jquery/jquery.min.js",
+   "bytes": 87553,
+   "sha256": "cb6f2d32c49d1c2b25e9ffc9aaafa3f83075346c01bcd4ae6eb187392a4292cf"
+  },
+  {
+   "source": "https://lumist.wine/wp-includes/js/zxcvbn-async.min.js?ver=1.0",
+   "file": "wp-includes/js/zxcvbn-async.min.js",
+   "bytes": 351,
+   "sha256": "e93e18f2f34a865e27d2d839eaccca6bec750d357f1c937980026d6d25507c2c"
+  }
+ ]
+}

@@ -1,0 +1,40 @@
+/* Approved pencil artwork: generous, uncropped studies with no halftone veil. */
+.estate-art{display:block;width:100%;height:auto}
+.figure.estate-art-figure::after{content:none}
+.estate-art-figure{margin:24px 0 12px}
+.illustrated-split{grid-template-columns:minmax(0,1fr);gap:32px}
+.illustrated-split .estate-art-figure{width:100%;max-width:1000px;margin:16px auto 0}
+.illustrated-split .notes{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 32px;align-items:start}
+.illustrated-split .notes .zoomnext{grid-column:1/-1}
+#marsh .illustrated-split .notes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.estate-chapters{margin:28px 0 8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+.estate-chapters-inner{position:relative;min-width:1000px}
+.estate-chapter-links{position:absolute;inset:20% 0 22%;display:grid;grid-template-columns:repeat(8,minmax(0,1fr))}
+.estate-chapter-links a{display:block;border-radius:8px}
+.estate-chapter-links a:hover{background:rgba(70,70,70,.035)}
+.estate-chapter-links a:focus-visible{outline:2px solid var(--ink);outline-offset:-3px;background:rgba(70,70,70,.055)}
+.estate-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:700px){.illustrated-split .notes,#marsh .illustrated-split .notes{grid-template-columns:1fr}.estate-chapters{margin-block:16px}.illustrated-split{gap:24px}}
+
+.species .sp{padding:24px 20px;gap:12px;background:transparent;border:0}
+.species .bird-study{display:block;width:100%;height:220px;overflow:hidden;margin-bottom:12px}
+
+.estate-breadcrumb{width:min(100% - 48px,1100px);margin:24px auto 0;font-size:15px;color:var(--muted,#626262)}
+.estate-breadcrumb a{text-decoration:underline;text-underline-offset:3px}
+
+/* A still reading surface; effervescence belongs in its own final study. */
+.estate-effervescence{margin:0;position:relative;max-width:520px;width:100%}
+.estate-effervescence #inbottle{aspect-ratio:4/5;width:100%;height:auto;max-height:none;background:linear-gradient(145deg,#343a37,#161e1c 45%,#303633);filter:grayscale(1)}
+.estate-effervescence figcaption{font-size:15px;line-height:1.5;color:var(--muted,#626262);margin-top:16px;max-width:32em}
+.estate-effervescence figcaption span{display:block;font-style:italic}
+.estate-motion-toggle{font:inherit;font-size:14px;color:var(--ink,#252525);background:transparent;border:0;border-bottom:1px solid currentColor;padding:4px 0;margin-top:12px;cursor:pointer}
+.estate-motion-toggle:hover{opacity:.7}
+.estate-motion-toggle:focus-visible{outline:2px solid currentColor;outline-offset:5px}
+.estate-motion-toggle[hidden]{display:none}
+#bubble .split{align-items:start}
+@media(max-width:900px){.estate-effervescence{max-width:440px;margin-inline:auto}}
+
+/* Background effervescence stays low contrast behind the editorial surface. */
+#air{opacity:1}
+.estate-background-motion{float:right;margin-top:0;font-size:13px;opacity:.75}
+@media(max-width:500px){.estate-background-motion{font-size:12px}}

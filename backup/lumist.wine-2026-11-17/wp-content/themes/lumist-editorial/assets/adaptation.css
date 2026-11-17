@@ -1,0 +1,31 @@
+/* WordPress integration: authentic account/commerce, prototype presentation. */
+body{padding-top:0;font-family:var(--body);font-size:18.5px;line-height:1.6}
+[hidden]{display:none!important}.site-header{position:sticky;top:0;z-index:210;background:#fff;border-bottom:3px double var(--ink)}
+.site-header a{text-decoration:none}.site-header svg{flex-shrink:0}.site-header .icon{padding:0}.site-header button{color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}img{max-width:100%}
+.prototype-footer{font-size:15px}.prototype-footer>.wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px}.prototype-footer .footer-contact{justify-content:flex-start;gap:12px 28px;padding-top:12px}.footer-contact:empty{display:none}
+.drawer{position:fixed;inset:0 0 0 auto;margin:0;width:min(420px,100%);height:100dvh;max-height:none;max-width:100%;padding:76px 24px 28px;border:0;border-left:1px solid var(--ink);color:var(--ink);background:#fff;box-shadow:-18px 0 40px #0002;overflow-y:auto;font-family:var(--body)}
+.drawer::backdrop{background:#14141461}.drawer h2{font:400 28px/1.1 var(--display);letter-spacing:0;border-bottom:3px double var(--ink);padding-bottom:20px;margin:0 0 24px}.drawer p{font-size:17px;line-height:1.6;margin-bottom:14px}.drawer h3{font-family:var(--display);font-weight:400;line-height:1.1}.drawer-close{position:absolute;right:16px;top:16px;border:0;background:none;font-size:30px;width:40px;height:40px}.drawer-open{overflow:hidden}.text-button{background:none;border:0;border-bottom:1px solid;padding:0 0 4px;font-family:var(--sc);font-size:16px;text-align:left}.article-meta{font-family:var(--sc);font-size:14px;letter-spacing:.08em;color:var(--muted)}
+.publication,.page-content,.dossier{padding-top:40px;padding-bottom:64px}.publication h1,.page-content h1,.dossier h1{font-family:var(--display);font-style:normal;font-weight:400;letter-spacing:-.01em;font-size:clamp(36px,4.5vw,64px);line-height:1.08;margin:0 0 28px}.publication h2,.page-content h2,.dossier h2{font-family:var(--display);font-style:normal;letter-spacing:0}.publication .article-body{font-family:var(--body);font-size:20px;line-height:1.75}.publication .deck{font-family:var(--body);font-size:24px;font-style:italic}.publication .article-rule{border-top:3px double var(--ink);height:0;background:none}.publication .article-image img{aspect-ratio:2.4;filter:grayscale(1) contrast(1.12)}.publication .article-body p{margin-bottom:1.3em}.publication .journal-wine h2{font-size:25px}.publication .journal-wine .article-meta{font-family:var(--sc)}
+.member-page .masthead{position:static;inset:auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:10px 0;margin-bottom:28px;border-top:1px solid var(--ink);border-bottom:3px double var(--ink);font-family:var(--sc);font-size:14px;letter-spacing:.08em}
+.member-page h1{font-size:clamp(32px,4vw,52px);margin:8px 0 32px}.member-page .kicker{font-family:var(--sc);font-size:17px;letter-spacing:.12em}.member-page .kicker span{font-family:var(--body);font-size:15px;font-style:italic;color:var(--muted);margin-left:12px;letter-spacing:0}.member-page .kicker span::before{content:'— '}.member-page .page-body{max-width:none}.member-page form.woocommerce-form-login{max-width:560px;padding:28px;border:1px solid var(--ink);border-top:3px double var(--ink);background:#fff;margin:20px auto 40px}.member-page .woocommerce>h2{font-family:var(--sc);font-size:22px;letter-spacing:.08em;text-align:center}.woocommerce input,.woocommerce select{border-radius:0!important}.page-body p{margin-bottom:1.2em}.page-body a{text-underline-offset:4px}
+@media(max-width:600px){.member-page form.woocommerce-form-login{padding:20px}.publication .article-image img{aspect-ratio:1.4}.publication .article-body{font-size:19px}.prototype-footer>.wrap{flex-direction:column}.member-page .masthead{font-size:12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Shared layout for additional WordPress Journal entries. */
+.home-sec{padding:56px 0 24px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;border-bottom:3px double var(--ink);padding-bottom:12px;margin-bottom:28px;flex-wrap:wrap}
+.sec-head h2{font-family:var(--display);font-weight:400;font-size:clamp(34px,4vw,56px);line-height:1;margin:0}
+.sec-head a{font-family:var(--sc);letter-spacing:.08em;font-size:16px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink)}
+.entries{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 28px}
+.entry{display:block;text-decoration:none;color:var(--ink)}
+.entry .im{aspect-ratio:4/5}
+.entry:nth-child(2) .im,.entry:nth-child(5) .im{aspect-ratio:1/1}
+.entry .kick{display:block;margin-top:14px}
+.entry h3{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.3vw,32px);line-height:1.1;margin:4px 0 0}
+.entry:hover h3{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.entry .im img{transition:transform .6s ease}
+.entry:hover .im img{transform:scale(1.03)}
+@media (prefers-reduced-motion:reduce){.entry .im img{transition:none}}
+@media (max-width:900px){.entries{grid-template-columns:1fr 1fr}}
+@media (max-width:540px){.entries{grid-template-columns:1fr}}
