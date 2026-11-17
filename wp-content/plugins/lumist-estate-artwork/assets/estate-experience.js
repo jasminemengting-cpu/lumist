@@ -208,7 +208,7 @@
     ambient = Array.from({ length: Math.min(36, Math.max(10, Math.round(airWidth * airHeight / 34000))) }, () => {
       const radius = random() < .12 ? 10 + random() * 8 : 3 + random() * 4.5;
       return { x: random(), phase: random(), rate: (4 + radius * .7) / (airHeight + 48),
-        radius, alpha: .21 + random() * .075, sway: random() * Math.PI * 2 };
+        radius, alpha: .115 + random() * .04, sway: random() * Math.PI * 2 };
     });
     drawAir();
   }
