@@ -79,105 +79,188 @@
   }
 
   // ---------- the leaf ----------
-  // Built from its lobes, like a botanical drawing: a pointed middle lobe, two
-  // upper and two lower side lobes, the petiolar lobes either side of the
-  // stalk, and a toothed margin between every tip and sinus. Unit leaf, blade
-  // pointing up (-y) from the petiole junction at (0,0); about 1 wide, 1 tall.
+  // Every leaf is drawn on its own: lobes, sinuses, teeth, vein angles, the
+  // tilt of the blade and the pencil marks all vary from leaf to leaf.
+  // Unit leaf: blade pointing up (-y) from the petiole junction at (0,0), about 1 across.
   function makeLeaf(v, seed) {
     const r = rng(seed);
+    const g = s => (r() + r() + r() - 1.5) * s * 1.15;   // gentle, bell-shaped variation
     const pol = (a, d) => [Math.sin(a) * d * .7, -Math.cos(a) * d * .7];
-    const wob = () => 1 + (r() - .5) * .06;
-    // [angle, radius, isTip]
+    const asym = 1 + g(.08);
     const keys = [
-      [0, 1.0 * wob(), 1],
-      [.5, v.sinU * wob(), 0],
-      [.98, .9 * wob(), 1],
-      [1.45, v.sinL * wob(), 0],
-      [1.92, .66 * wob(), 1],
-      [2.5, .44 * wob(), 0],
-      [v.petLobe, .4 * wob(), 1],
+      [g(.07), 1 + g(.06), 1],                 // middle lobe tip
+      [.5 + g(.05), v.sinU + g(.07), 0],       // upper sinus
+      [.98 + g(.08), .9 + g(.07), 1],          // upper side lobe
+      [1.45 + g(.06), v.sinL + g(.07), 0],     // lower sinus
+      [1.92 + g(.09), .65 + g(.07), 1],        // lower side lobe
+      [2.5 + g(.05), .44 + g(.05), 0],
+      [v.petLobe + g(.06), .4 + g(.05), 1],    // petiolar lobe
       [v.petSinus, .1, 0],
     ];
-    const ring = [];
-    keys.forEach(k => ring.push(k));
-    for (let i = keys.length - 2; i >= 0; i--) ring.push([-keys[i][0], keys[i][1] * wob(), keys[i][2]]);
-    // reorder from the right petiolar sinus round the top to the left one
-    const seq = ring.slice(keys.length - 1).reverse().concat(ring.slice(0, keys.length).slice(0, -1).reverse().reverse());
     const order = [];
-    for (let i = keys.length - 1; i >= 0; i--) order.push([-keys[i][0], keys[i][1], keys[i][2]]);
-    for (let i = 1; i < keys.length; i++) order.push(keys[i]);
-    const pts = [];
+    for (let i = keys.length - 1; i >= 1; i--) order.push([-keys[i][0] * (1 + g(.02)), keys[i][1] * (1 + g(.03)), keys[i][2]]);
+    order.push(keys[0]);
+    for (let i = 1; i < keys.length; i++) order.push([keys[i][0] * (1 + g(.02)), keys[i][1] * asym * (1 + g(.03)), keys[i][2]]);
+    const toothScale = 1 + g(.35);
+    const pts = [], tips = [];
     for (let i = 0; i < order.length - 1; i++) {
       const A = pol(order[i][0], order[i][1]), B = pol(order[i + 1][0], order[i + 1][1]);
+      if (order[i][2]) tips.push({ p: A, a: order[i][0], d: order[i][1] });
       const len = Math.hypot(B[0] - A[0], B[1] - A[1]);
-      const n = Math.max(2, Math.round(len / .075));
-      const nx = (B[1] - A[1]) / len, ny = -(B[0] - A[0]) / len;   // outward normal (clockwise ring)
-      const toTip = order[i + 1][2] ? 1 : -1;                         // teeth lean toward the lobe tip
+      const n = Math.max(2, Math.round(len / (.065 + r() * .025)));
+      const nx = (B[1] - A[1]) / len, ny = -(B[0] - A[0]) / len;
+      const toTip = order[i + 1][2] ? 1 : -1;
+      const swell = (order[i + 1][2] ? .15 : .1) * (1 + g(.25));
+      const small = order[i + 1][1] < .2 || order[i][1] < .2 ? .3 : 1;
       for (let k = 0; k < n; k++) {
-        const t = k / n;
-        const bulge = Math.sin(Math.PI * t) * len * (order[i + 1][2] ? .16 : .1);   // margins swell between tips and sinuses
-        const bx = A[0] + (B[0] - A[0]) * t - nx * bulge, by = A[1] + (B[1] - A[1]) * t - ny * bulge;
-        pts.push([bx, by]);
-        const t2 = (k + .5 + toTip * .3) / n;
-        const tooth = (.028 + r() * .018) * (order[i + 1][1] < .2 || order[i][1] < .2 ? .3 : 1);
-        const bulge2 = Math.sin(Math.PI * t2) * len * (order[i + 1][2] ? .16 : .1);
-        pts.push([A[0] + (B[0] - A[0]) * t2 - nx * (tooth + bulge2), A[1] + (B[1] - A[1]) * t2 - ny * (tooth + bulge2)]);
+        const t = k / n, t2 = (k + .5 + toTip * (.25 + r() * .12)) / n;
+        const b1 = Math.sin(Math.PI * t) * len * swell, b2 = Math.sin(Math.PI * t2) * len * swell;
+        pts.push([A[0] + (B[0] - A[0]) * t - nx * b1, A[1] + (B[1] - A[1]) * t - ny * b1]);
+        const tooth = (.012 + r() * .014) * toothScale * small;
+        pts.push([A[0] + (B[0] - A[0]) * t2 - nx * (b2 + tooth), A[1] + (B[1] - A[1]) * t2 - ny * (b2 + tooth)]);
       }
     }
     pts.push(pol(order[order.length - 1][0], order[order.length - 1][1]));
+    const inside = (x, y) => {
+      let c = false;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        const [xi, yi] = pts[i], [xj, yj] = pts[j];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+      }
+      return c;
+    };
+    // veins: five main veins curving gently to the lobe tips, smaller ones toward the teeth
+    const J = [g(.01), -.05];
     const veins = [];
-    const J = [0, -.07];
-    keys.filter(k => k[2]).forEach(k => {
-      for (const sg of k[0] ? [1, -1] : [1]) {
-        const tip = pol(sg * k[0], k[1] * .93);
-        const mid = [(J[0] + tip[0]) / 2 + (r() - .5) * .02, (J[1] + tip[1]) / 2 + (r() - .5) * .02];
-        veins.push([J, mid, tip]);
-        if (k[1] > .6) for (const t of [.38, .66]) {                  // secondary veins toward the teeth
-          const p = [J[0] + (tip[0] - J[0]) * t, J[1] + (tip[1] - J[1]) * t];
-          for (const sd of [-1, 1]) {
-            const a = sg * k[0] + sd * .75;
-            veins.push([p, [p[0] + Math.sin(a) * .16, p[1] - Math.cos(a) * .16]]);
-          }
+    tips.forEach(tp => {
+      const end = [tp.p[0] * .93, tp.p[1] * .93];
+      const bend = g(.035);
+      const mid = [(J[0] + end[0]) / 2 - (end[1] - J[1]) * bend, (J[1] + end[1]) / 2 + (end[0] - J[0]) * bend];
+      const main = Math.abs(tp.a) < .3 ? 1.5 : Math.abs(tp.a) < 1.3 ? 1.2 : Math.abs(tp.a) < 2.3 ? .95 : .7;
+      veins.push({ p: [J, mid, end], w: main });
+      const L0 = Math.hypot(end[0] - J[0], end[1] - J[1]);
+      const dir = Math.atan2(end[0] - J[0], -(end[1] - J[1]));
+      const count = tp.d > .6 ? 4 : 2;
+      for (let k = 1; k <= count; k++) {
+        const t = k / (count + 1) + g(.03);
+        const p = [J[0] + (end[0] - J[0]) * t, J[1] + (end[1] - J[1]) * t];
+        for (const sd of [-1, 1]) {
+          if (r() < .12) continue;
+          const a = dir + sd * (.62 + g(.12));
+          const l = (1 - t) * L0 * (.5 + r() * .2);
+          const q = [p[0] + Math.sin(a) * l, p[1] - Math.cos(a) * l];
+          if (!inside(q[0], q[1])) continue;
+          const mq = [(p[0] + q[0]) / 2 + Math.cos(a) * l * .08 * sd, (p[1] + q[1]) / 2 + Math.sin(a) * l * .08 * sd];
+          veins.push({ p: [p, mq, q], w: .55 });
         }
       }
     });
-    return { pts, veins, J, dark: v.dark };
+    // pencil tone, laid in short strokes running with the veins: darker on the
+    // shaded side (lower right), in the pockets near the midrib and at the junction
+    const hatch = [];
+    const mains = tips.map(tp => Math.atan2(tp.p[0], -tp.p[1]));
+    for (let i = 0; i < 330; i++) {
+      const x = (r() - .5) * 1.5, y = -1 + r() * 1.35;
+      if (!inside(x, y)) continue;
+      const d = Math.hypot(x - J[0], y - J[1]);
+      let shade = .18 + .38 * clamp01(x / .7 + .5) * .9 + .25 * clamp01((y + .3) / .5) + (d < .2 ? .35 : 0);
+      shade += g(.12);
+      if (r() > shade) continue;
+      const pa = Math.atan2(x - J[0], -(y - J[1]));
+      let near = mains[0];
+      mains.forEach(a => { if (Math.abs(a - pa) < Math.abs(near - pa)) near = a; });
+      const ang = near + (pa > near ? 1 : -1) * (.55 + g(.15));
+      const l = .05 + r() * .08;
+      hatch.push([x - Math.sin(ang) * l / 2, y + Math.cos(ang) * l / 2, x + Math.sin(ang) * l / 2, y - Math.cos(ang) * l / 2, clamp01(shade)]);
+    }
+    // a few spots, used once the leaf turns in autumn
+    const spots = [];
+    for (let i = 0; i < 26; i++) {
+      const x = (r() - .5) * 1.3, y = -.95 + r() * 1.2;
+      if (inside(x, y)) spots.push([x, y, .012 + r() * .03, r()]);
+    }
+    // the pressure of the outline changes along the edge, with the odd lifted pencil
+    const pressure = [];
+    for (let i = 0; i < pts.length; i += 7) pressure.push(r() < .07 ? 0 : .55 + r() * .45);
+    return { pts, veins, hatch, spots, pressure, J, dark: v.dark, under: r() < .15, sheen: r() };
   }
 
-  function drawLeaf(L, x, y, size, angle, squash, alpha, autumn, back, key) {
+  function drawLeaf(L, x, y, size, angle, squash, alpha, autumn, back, key, young = 0) {
     if (size < 2 || alpha <= .01) return;
     const c = Math.cos(angle), s = Math.sin(angle);
-    const T = ([a, b]) => [x + (a * size * squash) * c - (b * size) * s, y + (a * size * squash) * s + (b * size) * c];
+    const sx = size * squash * (L.under ? -1 : 1);
+    const T = ([a, b]) => [x + a * sx * c - b * size * s, y + a * sx * s + b * size * c];
     const outline = L.pts.map(T);
-    // body
     ctx.beginPath();
     outline.forEach(([a, b], i) => i ? ctx.lineTo(a, b) : ctx.moveTo(a, b));
     ctx.closePath();
-    const paper = back ? 233 : 245;
+    const paper = back ? 234 : (L.under ? 249 : 245);
     ctx.fillStyle = `rgba(${paper},${paper},${paper - 2},${alpha * .95})`;
     ctx.fill();
-    // tone: pencil hatching, heavier as the leaf turns
     ctx.save(); ctx.clip();
-    const tone = (back ? .24 : .15) + autumn * (L.dark ? .34 : .13);
-    ctx.strokeStyle = ink(alpha * tone); ctx.lineWidth = .8;
-    ctx.beginPath();
-    for (let k = -size; k < size; k += 5) { ctx.moveTo(x + k - size * .4, y - size * 1.1); ctx.lineTo(x + k + size * .4, y + size * .2); }
-    ctx.stroke();
-    if (autumn > .2) {
-      ctx.strokeStyle = ink(alpha * autumn * (L.dark ? .3 : .12));
+    // tone
+    const k = alpha * (back ? 1.25 : 1) * (L.under ? .5 : 1) * (1 - young * .55) * (1 + autumn * (L.dark ? 1.3 : .5));
+    for (const band of [[0, .45, .22], [.45, .75, .4], [.75, 1.01, .58]]) {
+      ctx.strokeStyle = ink(Math.min(.9, k * band[2])); ctx.lineWidth = .8;
       ctx.beginPath();
-      for (let k = -size; k < size; k += 7) { ctx.moveTo(x + k + size * .4, y - size * 1.1); ctx.lineTo(x + k - size * .4, y + size * .2); }
+      for (const h of L.hatch) {
+        if (h[4] < band[0] || h[4] >= band[1]) continue;
+        const [a, b] = T([h[0], h[1]]), [e, f] = T([h[2], h[3]]);
+        ctx.moveTo(a, b); ctx.lineTo(e, f);
+      }
       ctx.stroke();
     }
-    // the lit side of the blade
-    const [hx, hy] = T([-.2, -.62]);
-    const lit = ctx.createRadialGradient(hx, hy, 0, hx, hy, size * .42);
-    lit.addColorStop(0, `rgba(${paper},${paper},${paper},${alpha * .7})`); lit.addColorStop(1, `rgba(${paper},${paper},${paper},0)`);
+    if (autumn > .15) {          // the turning leaf: crossed strokes and blotches
+      ctx.strokeStyle = ink(alpha * autumn * (L.dark ? .28 : .1)); ctx.lineWidth = .6; ctx.beginPath();
+      for (let i = 0; i < L.hatch.length; i += 2) {
+        const h = L.hatch[i];
+        const [a, b] = T([h[0], h[3]]), [e, f] = T([h[2], h[1]]);
+        ctx.moveTo(a, b); ctx.lineTo(e, f);
+      }
+      ctx.stroke();
+      ctx.fillStyle = ink(alpha * autumn * (L.dark ? .3 : .14));
+      for (const sp of L.spots) {
+        if (sp[3] > autumn) continue;
+        const [a, b] = T([sp[0], sp[1]]);
+        ctx.beginPath(); ctx.arc(a, b, sp[2] * size, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    if (young > .2) {            // fine hairs on a young, still-folded leaf
+      ctx.fillStyle = ink(alpha * young * .35);
+      for (let i = 0; i < L.hatch.length; i += 5) {
+        const [a, b] = T([L.hatch[i][0], L.hatch[i][1]]);
+        ctx.fillRect(a, b, .8, .8);
+      }
+    }
+    // a soft sheen on the lit lobes
+    const [hx, hy] = T([-.22 * (L.under ? -1 : 1), -.6]);
+    const lit = ctx.createRadialGradient(hx, hy, 0, hx, hy, size * (.25 + L.sheen * .2));
+    lit.addColorStop(0, `rgba(${paper},${paper},${paper},${alpha * .75})`); lit.addColorStop(1, `rgba(${paper},${paper},${paper},0)`);
     ctx.fillStyle = lit; ctx.fillRect(x - size * 1.2, y - size * 1.3, size * 2.4, size * 1.6);
     ctx.restore();
-    pencil(outline, alpha * (back ? .42 : .62), back ? .85 : 1.05, key, true);
-    L.veins.forEach((v, i) => pencil(v.map(T), alpha * (back ? .28 : .48), i % 5 === 0 ? 1 : .75, key * 7 + i));
-    
+    // veins: tapered main veins, finer side veins; raised and pale on an underside
+    const va = alpha * (back ? .3 : .5) * (L.under ? 1.25 : 1) * (1 - young * .3);
+    L.veins.forEach((vn, i) => {
+      const p = vn.p.map(T);
+      jitterSeed = key * 13 + i * 7 + boil * 31;
+      ctx.strokeStyle = ink(va * (vn.w > 1 ? 1 : .8));
+      ctx.lineCap = 'round';
+      ctx.lineWidth = vn.w * (back ? .8 : 1) * Math.min(1.3, size / 50);
+      ctx.beginPath(); ctx.moveTo(p[0][0], p[0][1]); ctx.quadraticCurveTo(p[1][0] + jit() * .8, p[1][1] + jit() * .8, (p[1][0] + p[2][0]) / 2, (p[1][1] + p[2][1]) / 2); ctx.stroke();
+      ctx.lineWidth *= .55;
+      ctx.beginPath(); ctx.moveTo((p[1][0] + p[2][0]) / 2, (p[1][1] + p[2][1]) / 2); ctx.lineTo(p[2][0] + jit() * .6, p[2][1] + jit() * .6); ctx.stroke();
+    });
+    if (squash < .45) {          // the crease of a leaf still folded along its midrib
+      pencil([T([0, -.05]), T([0, -.7])], alpha * .55 * (1 - squash), 1.1, key + 1);
+    }
+    // outline in short runs, pressure varying, the pencil lifting now and then
+    const oa = alpha * (back ? .45 : .7) * (1 - young * .35);
+    for (let i = 0, run = 0; i < outline.length - 1; i += 7, run++) {
+      const pr = L.pressure[run] ?? .8;
+      if (!pr) continue;
+      const seg = outline.slice(i, Math.min(outline.length, i + 8));
+      pencil(seg, oa * pr, (back ? .8 : 1.05) * (.8 + pr * .4), key * 3 + run, false);
+    }
   }
 
   // ---------- the vines ----------
@@ -211,7 +294,6 @@
 
   const shoots = [];
   VINES.forEach((v, vi) => {
-    const shapes = [0, 1, 2].map(k => makeLeaf(v, 400 + vi * 50 + k));
     v.spurs.forEach((x0, si) => {
       const r = rng(1000 + vi * 100 + si * 17);
       const back = si % 2 === 1;
@@ -224,9 +306,9 @@
         if (s > L) break;
         n++;
         const node = {
-          s, n, side, leaf: shapes[Math.floor(r() * 3)],
+          s, n, side, leaf: makeLeaf(v, 5000 + vi * 997 + si * 131 + n * 17), mature: 70 + r() * 50, flutter: .6 + r() * .9, phase: r() * 6,
           size: v.leaf * [.62, .78, .9, 1, 1.04, 1, .96, .9, .8, .66, .5][Math.min(n - 1, 10)] * (back ? .9 : 1),
-          squash: .62 + r() * .38, tilt: .55 + r() * .5, delay: r(), drift: (r() - .5) * 120, spin: (r() - .5) * 6,
+          squash: .5 + r() * .5, tilt: .55 + r() * .5, delay: r(), drift: (r() - .5) * 120, spin: (r() - .5) * 6,
         };
         // the grapevine pattern: clusters opposite the 3rd and 4th leaves,
         // tendrils opposite the leaves above, every third node without either
@@ -239,7 +321,6 @@
     });
   });
   shoots.sort((a, b) => (b.back - a.back));             // back shoots first, front canopy over them
-  const budLeaf = shoots[0].nodes[0].leaf;
 
   // Tied in between the catch wires, so nearly vertical; above the top wire
   // the tip leans and droops a little.
@@ -281,7 +362,7 @@
     pencil(pts.map(([a, b]) => [a + 1.5, b]), alpha * .25, .8, key + 5);   // shaded edge
   }
 
-  function drawBud(x, y, swell, green, key) {
+  function drawBud(sh, x, y, swell, green, key) {
     const w = 2.6 + swell * 2.6, h = 3.6 + swell * 4.2;
     ctx.fillStyle = ink(.2 + swell * .1);
     ctx.beginPath(); ctx.ellipse(x, y - h, w, h, 0, 0, Math.PI * 2); ctx.fill();
@@ -292,8 +373,8 @@
       ctx.stroke();
     }
     if (green > 0) {            // the first leaves unfolding at the green tip
-      drawLeaf(budLeaf, x - 2, y - h * 1.6, 6 + green * 8, -.7, .8, green, 0, false, key + 7);
-      drawLeaf(budLeaf, x + 2, y - h * 1.9, 5 + green * 7, .6, .8, green, 0, false, key + 9);
+      drawLeaf(sh.nodes[0].leaf, x - 1, y - h * 1.5, 5 + green * 9, -.35 - green * .4, .2 + green * .35, green, 0, false, key + 7, 1 - green * .4);
+      drawLeaf(sh.nodes[1].leaf, x + 1, y - h * 1.9, 4 + green * 6, .25 + green * .35, .18 + green * .3, green, 0, false, key + 9, 1);
     }
   }
 
@@ -375,7 +456,7 @@
 
     if (m >= 1.4 && m < 3.4) {                         // budded spurs: dormant, swelling, green tip
       const fade = 1 - span(m, 3.2, 3.4);
-      shoots.forEach(sh => drawBud(sh.x0, CORD - 1, swell, green * fade, sh.key + 1));
+      shoots.forEach(sh => drawBud(sh, sh.x0, CORD - 1, swell, green * fade, sh.key + 1));
     }
 
     shoots.forEach(sh => {
@@ -406,21 +487,26 @@
           later.push(() => drawCluster(nd.cluster, nx, ny, -nd.side, m, sh.v.dark, (1 - picked) * (sh.back ? .7 : 1), sh.back, sh.key + nd.n * 11));
         }
         if (m >= 3.0 && m < 11.6) {
-          const size = nd.size * (.18 + .82 * smooth(clamp01(age * 1.15)));
+          // leaves open from the tip: small, folded and upright at first, then
+          // unfolding, turning outward and expanding at their own pace
+          const lage = clamp01((len - nd.s) / nd.mature);
+          const size = nd.size * (.4 + .6 * smooth(lage));
+          const unfold = smooth(clamp01(lage * 4 + .15));
+          const young = 1 - smooth(clamp01(lage * 2.2));
           let alpha = 1;
           if (nd.n <= 3 && !sh.back) alpha *= 1 - thin * (nd.n === 3 ? .7 : 1);   // fruit-zone leaves pulled
           const dropAt = 9.6 + nd.delay * 1.3 - (nd.n / 14) * .5;
           const drop = clamp01((m - dropAt) / .9);
           if (drop >= 1 || alpha <= .01) return;
           const autumn = clamp01((turn - nd.delay * .35) / .65);
-          const ang = nd.side * nd.tilt + sh.lean + wind * (1 + nd.n * .1) + drop * nd.spin;
-          const pet = size * .42;                       // the petiole carries the blade out from the node
+          const ang = nd.side * mix(.1, nd.tilt, smooth(lage * 1.3)) + sh.lean + wind * nd.flutter * Math.sin(time * (.9 + nd.flutter) + nd.phase) * 1.6 + drop * nd.spin;
+          const pet = size * .42 * mix(.45, 1, unfold);                       // the petiole carries the blade out from the node
           const px0 = nx + Math.sin(ang) * pet * .9, py0 = ny - Math.cos(ang) * pet * .9 + 2;
           const fx = px0 + nd.drift * drop * drop + Math.sin(drop * 9 + nd.n) * 14 * drop;
           const fy = py0 + (GROUND - py0) * drop * drop;
           const draw = () => {
             if (drop <= 0) pencil([[nx, ny], [(nx + px0) / 2 + nd.side * 2, (ny + py0) / 2 - 2], [px0, py0]], alpha * (sh.back ? .4 : .6), .9, sh.key + nd.n * 3);
-            drawLeaf(nd.leaf, fx, fy, size, ang, nd.squash, alpha * (sh.back ? .9 : 1) * (1 - span(drop, .8, 1)), autumn, sh.back, sh.key + nd.n * 13);
+            drawLeaf(nd.leaf, fx, fy, size, ang, mix(.16, nd.squash, unfold) * (1 - drop * .3 * Math.sin(drop * 7 + nd.phase)), alpha * (sh.back ? .9 : 1) * (1 - span(drop, .8, 1)), autumn, sh.back, sh.key + nd.n * 13, young);
           };
           if (nd.n <= 3) later.push(draw); else draw();
         }
@@ -454,7 +540,7 @@
   function size() {
     const w = img.clientWidth, h = img.clientHeight;
     if (!w) return;
-    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const dpr = Math.min(devicePixelRatio || 1, 1.6);
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
   }
   function paint(p, time = 0) {
@@ -466,7 +552,7 @@
     frame = 0;
     if (!on || !stage.isConnected) return;
     if (!start) start = now;
-    if (now - lastPaint > 66) {                       // about 15 drawings a second
+    if (now - lastPaint > 83) {                       // about 12 drawings a second, like flipped pages
       lastPaint = now;
       boil = (boil + 1) % 3;
       const t = (now - start) / 1000;
