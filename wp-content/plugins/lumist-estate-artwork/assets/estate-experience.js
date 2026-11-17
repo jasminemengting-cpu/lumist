@@ -86,6 +86,34 @@
       c.beginPath(); c.arc(x - r * .35, y - r * .38, Math.max(.45, r * .22), 0, Math.PI * 2); c.fill();
     }
   }
+  // Content the bubbles should pass behind: they fade out smoothly as they near it.
+  const FADE = 64;                       // px of soft edge around text and drawings
+  let blocks = [];                       // page-space rects
+  function collectBlocks() {
+    const sel = 'main :is(h1,h2,h3,h4,p,dl,li,blockquote,figcaption,.kicker,.kick,.eyebrow,.zoomnext,.masthead,.motto,.lead,.crumb,img,canvas#inbottle,.addr,.site,.btn)';
+    const sx = scrollX, sy = scrollY;
+    blocks = [...document.querySelectorAll(sel)].map(el => el.getBoundingClientRect())
+      .filter(r => r.width > 0 && r.height > 0)
+      .map(r => ({ l: r.left + sx, t: r.top + sy, r: r.right + sx, b: r.bottom + sy }));
+  }
+  function contentFade(x, y, radius) {
+    const sy = scrollY, sx = scrollX;
+    let d = Infinity;
+    for (const k of blocks) {
+      const t = k.t - sy, b = k.b - sy;
+      if (b < y - FADE - radius || t > y + FADE + radius) continue;
+      const l = k.l - sx, r = k.r - sx;
+      const dx = Math.max(l - x, 0, x - r), dy = Math.max(t - y, 0, y - b);
+      const dist = Math.hypot(dx, dy) - radius;
+      if (dist < d) { d = dist; if (d <= 0) return 0; }
+    }
+    if (d >= FADE) return 1;
+    const u = d / FADE; return u * u * (3 - 2 * u);
+  }
+  addEventListener('load', collectBlocks);
+  addEventListener('resize', collectBlocks);
+  if ('ResizeObserver' in window) new ResizeObserver(collectBlocks).observe(document.body);
+  setTimeout(collectBlocks, 1500);
   function drawAir() {
     if (!airCtx) return;
     airCtx.clearRect(0, 0, airWidth, airHeight);
@@ -97,7 +125,8 @@
       const radius = bubble.radius * (.86 + progress * .14);
       const fade = Math.min(1, progress * 12, (1 - progress) * 12);
       const alpha = bubble.alpha * fade;
-      paperBubble(airCtx, x, y, radius, alpha);
+      const hide = contentFade(x, y, radius);
+      if (hide > .01) paperBubble(airCtx, x, y, radius, alpha * hide);
     }
   }
   function sphere(x, y, radius, alpha) {
@@ -220,5 +249,5 @@
   } else { visible = true; }
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
   else addEventListener('resize', resize);
-  resizeAir(); resize(); sync();
+  collectBlocks(); resizeAir(); resize(); sync();
 })();
