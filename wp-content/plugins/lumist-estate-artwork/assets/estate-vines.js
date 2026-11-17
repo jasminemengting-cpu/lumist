@@ -92,15 +92,15 @@
       [.98 + g(.08), .9 + g(.07), 1],          // upper side lobe
       [1.45 + g(.06), v.sinL + g(.07), 0],     // lower sinus
       [1.92 + g(.09), .65 + g(.07), 1],        // lower side lobe
-      [2.5 + g(.05), .44 + g(.05), 0],
+      [(1.92 + v.petLobe) / 2 + g(.04), .46 + g(.05), 0],
       [v.petLobe + g(.06), .4 + g(.05), 1],    // petiolar lobe
-      [v.petSinus, .1, 0],
+      [v.petSinus, v.petSinusR, 0],            // petiolar sinus: open U (Chardonnay) or overlapping (Pinot Noir)
     ];
     const order = [];
     for (let i = keys.length - 1; i >= 1; i--) order.push([-keys[i][0] * (1 + g(.02)), keys[i][1] * (1 + g(.03)), keys[i][2]]);
     order.push(keys[0]);
     for (let i = 1; i < keys.length; i++) order.push([keys[i][0] * (1 + g(.02)), keys[i][1] * asym * (1 + g(.03)), keys[i][2]]);
-    const toothScale = 1 + g(.35);
+    const toothScale = (1 + g(.35)) * v.tooth;
     const pts = [], tips = [];
     for (let i = 0; i < order.length - 1; i++) {
       const A = pol(order[i][0], order[i][1]), B = pol(order[i + 1][0], order[i + 1][1]);
@@ -158,7 +158,7 @@
     // shaded side (lower right), in the pockets near the midrib and at the junction
     const hatch = [];
     const mains = tips.map(tp => Math.atan2(tp.p[0], -tp.p[1]));
-    for (let i = 0; i < 330; i++) {
+    for (let i = 0; i < 270; i++) {
       const x = (r() - .5) * 1.5, y = -1 + r() * 1.35;
       if (!inside(x, y)) continue;
       const d = Math.hypot(x - J[0], y - J[1]);
@@ -172,6 +172,12 @@
       const l = .05 + r() * .08;
       hatch.push([x - Math.sin(ang) * l / 2, y + Math.cos(ang) * l / 2, x + Math.sin(ang) * l / 2, y - Math.cos(ang) * l / 2, clamp01(shade)]);
     }
+    // Pinot Noir's blade is blistered and puckered between the veins
+    const bumps = [];
+    if (v.bullate) for (let i = 0; i < 60 && bumps.length < 26; i++) {
+      const x = (r() - .5) * 1.2, y = -.9 + r() * 1.05;
+      if (inside(x, y) && Math.hypot(x, y) > .15) bumps.push([x, y, .028 + r() * .03, r() * 6]);
+    }
     // a few spots, used once the leaf turns in autumn
     const spots = [];
     for (let i = 0; i < 26; i++) {
@@ -181,7 +187,7 @@
     // the pressure of the outline changes along the edge, with the odd lifted pencil
     const pressure = [];
     for (let i = 0; i < pts.length; i += 7) pressure.push(r() < .07 ? 0 : .55 + r() * .45);
-    return { pts, veins, hatch, spots, pressure, J, dark: v.dark, under: r() < .15, sheen: r() };
+    return { pts, veins, hatch, spots, bumps, pressure, J, dark: v.dark, under: r() < .15, sheen: r() };
   }
 
   function drawLeaf(L, x, y, size, angle, squash, alpha, autumn, back, key, young = 0) {
@@ -198,7 +204,7 @@
     ctx.fill();
     ctx.save(); ctx.clip();
     // tone
-    const k = alpha * (back ? 1.25 : 1) * (L.under ? .5 : 1) * (1 - young * .55) * (1 + autumn * (L.dark ? 1.3 : .5));
+    const k = alpha * (back ? 1.25 : 1) * (L.under ? .5 : 1) * (1 - young * .55) * (L.dark ? 1.18 + autumn * 1.5 : .9 - autumn * .35);
     for (const band of [[0, .45, .22], [.45, .75, .4], [.75, 1.01, .58]]) {
       ctx.strokeStyle = ink(Math.min(.9, k * band[2])); ctx.lineWidth = .8;
       ctx.beginPath();
@@ -217,11 +223,22 @@
         ctx.moveTo(a, b); ctx.lineTo(e, f);
       }
       ctx.stroke();
-      ctx.fillStyle = ink(alpha * autumn * (L.dark ? .3 : .14));
+      ctx.fillStyle = ink(alpha * autumn * (L.dark ? .34 : .1));
       for (const sp of L.spots) {
         if (sp[3] > autumn) continue;
         const [a, b] = T([sp[0], sp[1]]);
         ctx.beginPath(); ctx.arc(a, b, sp[2] * size, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    if (L.bumps.length) {         // the blistered surface
+      ctx.lineWidth = .6;
+      for (const b of L.bumps) {
+        const [a, c2] = T([b[0], b[1]]);
+        const rr = b[2] * size;
+        ctx.strokeStyle = ink(alpha * (back ? .2 : .3));
+        ctx.beginPath(); ctx.arc(a, c2, rr, b[3], b[3] + 2.2); ctx.stroke();
+        ctx.strokeStyle = `rgba(255,255,255,${alpha * .5})`;
+        ctx.beginPath(); ctx.arc(a, c2, rr * .8, b[3] + 3.3, b[3] + 4.9); ctx.stroke();
       }
     }
     if (young > .2) {            // fine hairs on a young, still-folded leaf
@@ -265,54 +282,72 @@
   // ---------- the vines ----------
   // Spur positions are the knobs on the drawn cordons.
   const VINES = [
-    { dark: false, sinU: .78, sinL: .62, petLobe: 2.72, petSinus: 2.95, leaf: 64, spurs: [255, 305, 382, 438, 560, 625, 712, 770] },        // Chardonnay
-    { dark: true, sinU: .66, sinL: .52, petLobe: 3.08, petSinus: 3.14, leaf: 61, spurs: [1035, 1095, 1175, 1232, 1336, 1400, 1470, 1530] }, // Pinot Noir
+    { // Chardonnay: vigorous and upright; larger, smoother, nearly unlobed leaves
+      // with an open U petiolar sinus edged by veins; medium, conical, often
+      // winged clusters of round green-gold berries that freckle in the sun
+      dark: false, shift: -.15, leaf: 66, gap: 1, Lmin: 315, Lmax: 352, lean: .05, droop: .8, pet: .5,
+      sinU: .85, sinL: .77, petLobe: 2.46, petSinus: 2.86, petSinusR: .2, tooth: 1, bullate: 0,
+      spurs: [252, 306, 380, 437, 561, 627, 709, 772], blind: [],
+      cl: { len: 66, R: 5.6, step: 1.36, width: 34, wing: true, oval: 1 } },
+    { // Pinot Noir: less vigorous, shorter internodes, a more spreading habit;
+      // smaller, thick, dark, blistered three-lobed leaves whose petiolar lobes
+      // overlap; small, tight, cylindrical "pine cone" clusters of slightly
+      // oval berries that turn blue-black under a dusty bloom
+      dark: true, shift: 0, leaf: 55, gap: .86, Lmin: 270, Lmax: 330, lean: .12, droop: 2.4, pet: .4,
+      sinU: .77, sinL: .7, petLobe: 3.24, petSinus: 3.14, petSinusR: .13, tooth: .6, bullate: 1,
+      spurs: [1036, 1101, 1178, 1233, 1338, 1404, 1471, 1531], blind: [2],
+      cl: { len: 56, R: 5, step: 1.3, width: 22, wing: false, oval: 1.1 } },
   ];
 
   // A cluster: berries on a shouldered cone with a small wing (Chardonnay),
   // or a compact, cylindrical pine-cone shape (Pinot Noir).
   function makeCluster(v, r) {
-    const berries = [];
-    const len = v.dark ? 60 : 66, R = v.dark ? 5.2 : 5.6;
-    const rows = Math.round(len / (R * 1.45));
+    const c = v.cl, berries = [];
+    const len = c.len * (.88 + r() * .24), R = c.R;
+    const rows = Math.round(len / (R * c.step));
     for (let i = 0; i < rows; i++) {
       const u = i / (rows - 1);
-      const width = v.dark ? 24 * (1 - .45 * u * u) : 30 * Math.pow(1 - u, .75) + 3;
-      const count = Math.max(1, Math.round(width / (R * 1.5)));
+      const width = v.dark ? c.width * (1 - .35 * u * u) * (.92 + r() * .16)        // cylinder, rounded end
+                           : (c.width * Math.pow(1 - u, .8) + 3) * (.9 + r() * .2);  // shouldered cone
+      const count = Math.max(1, Math.round(width / (R * (v.dark ? 1.25 : 1.32))));
       for (let k = 0; k < count; k++) {
         const across = count === 1 ? 0 : (k / (count - 1) - .5) * width;
-        berries.push({ u: i * R * 1.45 + (r() - .5) * 2, v: across + (i % 2 ? R * .5 : 0) + (r() - .5) * 2, z: r(), t: r(), rr: .85 + r() * .25 });
+        berries.push({ u: i * R * c.step + (r() - .5) * 2.2, v: across + (i % 2 ? R * .5 : 0) + (r() - .5) * 2.4,
+          z: r(), t: r(), rr: (v.dark ? .9 : .82) + r() * .25, fr: r(), rot: (r() - .5) * .6 });
       }
     }
-    if (!v.dark) {
-      for (let k = 0; k < 4; k++) berries.push({ u: 6 + k * 5, v: 20 + k * 3 + (r() - .5) * 3, z: r() * .4, t: r(), rr: .8 + r() * .2 });
+    if (c.wing && r() < .75) {            // Chardonnay's wing off the shoulder
+      const side = r() < .5 ? -1 : 1, n = 4 + Math.floor(r() * 4);
+      for (let k = 0; k < n; k++) berries.push({ u: 5 + k * 4.2, v: side * (18 + k * 3.2 + (r() - .5) * 3), z: r() * .4, t: r(), rr: .78 + r() * .2, fr: r(), rot: 0 });
     }
     berries.sort((a, b) => a.z - b.z);
-    return { berries, R, len, delay: r(), hang: (r() - .5) * .25 };
+    return { berries, R, len, delay: r(), hang: (r() - .5) * .3 };
   }
 
   const shoots = [];
   VINES.forEach((v, vi) => {
     v.spurs.forEach((x0, si) => {
-      const r = rng(1000 + vi * 100 + si * 17);
-      const back = si % 2 === 1;
-      const L = 318 + r() * 42;
-      const sh = { v, x0: x0 + (r() - .5) * 6, back, L, lean: (r() - .5) * .07, droop: (r() - .5) * 1.4, nodes: [], key: vi * 1000 + si * 60 + 11 };
+      if (v.blind.includes(si)) return;                 // a blind spur: no shoot this year
+      const r = rng(1000 + vi * 7919 + si * 173);
+      const back = r() < .45;
+      const weak = r() < .2;                             // the odd weaker shoot
+      const L = (v.Lmin + r() * (v.Lmax - v.Lmin)) * (weak ? .78 : 1);
+      const sh = { v, x0: x0 + (r() - .5) * 8, back, L, lean: (r() - .5) * v.lean * 2, droop: (r() - .3) * v.droop, nodes: [], key: vi * 1000 + si * 60 + 11, zig: 1.4 + r() * 1.2 };
       let s = 0, side = r() < .5 ? -1 : 1, n = 0;
       const gaps = [20, 26, 32, 38, 42, 44, 44, 42, 40, 36, 30];
       for (;;) {
-        s += gaps[Math.min(n, gaps.length - 1)] * (.92 + r() * .16);
+        s += gaps[Math.min(n, gaps.length - 1)] * v.gap * (.88 + r() * .24);
         if (s > L) break;
         n++;
         const node = {
           s, n, side, leaf: makeLeaf(v, 5000 + vi * 997 + si * 131 + n * 17), mature: 70 + r() * 50, flutter: .6 + r() * .9, phase: r() * 6,
-          size: v.leaf * [.62, .78, .9, 1, 1.04, 1, .96, .9, .8, .66, .5][Math.min(n - 1, 10)] * (back ? .9 : 1),
+          size: v.leaf * [.62, .78, .9, 1, 1.04, 1, .96, .9, .8, .66, .5][Math.min(n - 1, 10)] * (back ? .9 : 1) * (.88 + r() * .24),
           squash: .5 + r() * .5, tilt: .55 + r() * .5, delay: r(), drift: (r() - .5) * 120, spin: (r() - .5) * 6,
         };
         // the grapevine pattern: clusters opposite the 3rd and 4th leaves,
         // tendrils opposite the leaves above, every third node without either
-        if (n === 3 || (n === 4 && r() < .7)) node.cluster = makeCluster(v, r);
-        else if (n >= 5 && (n % 3) !== 1) node.tendril = { len: 26 + r() * 16, turns: 2.2 + r() * 1.5 };
+        if (n === 3 || (n === 4 && r() < (weak ? .2 : .7))) node.cluster = makeCluster(v, r);
+        else if (n >= 5 && (n % 3) !== 1) node.tendril = { len: 24 + r() * 18, turns: 1.8 + r() * 1.6, fork: .35 + r() * .2 };
         sh.nodes.push(node);
         side = -side;
       }
@@ -327,6 +362,13 @@
     const y = CORD - 2 - Math.cos(sh.lean) * s;
     let x = sh.x0 + Math.sin(sh.lean) * s;
     if (y < TOP_WIRE) x += sh.droop * Math.pow((TOP_WIRE - y) / 40, 2) * 6;
+    // grape shoots kink a little at every node
+    let prev = 0, k = 0;
+    for (const nd of sh.nodes) { if (nd.s > s) break; prev = nd.s; k++; }
+    const next = sh.nodes[k] ? sh.nodes[k].s : prev + 40;
+    const t = clamp01((s - prev) / Math.max(1, next - prev));
+    const a = (k % 2 ? 1 : -1) * sh.zig, b = -a;
+    x += k ? a + (b - a) * t : b * t;
     return [x, y];
   }
 
@@ -351,15 +393,26 @@
   }
 
   function drawStem(pts, base, alpha, wood, key) {
-    ctx.lineCap = 'round';
-    for (let i = 1; i < pts.length; i++) {
-      const t = i / pts.length;
-      ctx.strokeStyle = ink(alpha * (wood ? .85 : .68));
-      ctx.lineWidth = base * (1 - t * .65) + (wood ? .6 : 0);
-      jitterSeed = key + i * 3 + boil * 101;
-      ctx.beginPath(); ctx.moveTo(pts[i - 1][0] + jit() * .6, pts[i - 1][1]); ctx.lineTo(pts[i][0] + jit() * .6, pts[i][1]); ctx.stroke();
+    const L = [], R = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+      const dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1;
+      const w = (base * (1 - .62 * i / pts.length) + (wood ? .5 : 0)) / 2;
+      L.push([pts[i][0] - dy / d * w, pts[i][1] + dx / d * w]);
+      R.push([pts[i][0] + dy / d * w, pts[i][1] - dx / d * w]);
     }
-    pencil(pts.map(([a, b]) => [a + 1.5, b]), alpha * .25, .8, key + 5);   // shaded edge
+    ctx.beginPath();
+    L.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
+    for (let i = R.length - 1; i >= 0; i--) ctx.lineTo(R[i][0], R[i][1]);
+    ctx.closePath();
+    ctx.fillStyle = wood ? `rgba(150,146,140,${alpha})` : `rgba(226,226,222,${alpha})`;
+    ctx.fill();
+    pencil(L, alpha * (wood ? .7 : .5), .8, key);
+    pencil(R, alpha * (wood ? .9 : .7), 1.1, key + 1);                       // shaded side
+    if (wood) {                                        // bark striations on the hardened cane
+      pencil(pts.map(([x, y], i) => [x + .6, y]), alpha * .3, .5, key + 2);
+      pencil(pts.map(([x, y], i) => [x - .9, y + 3]), alpha * .2, .5, key + 3);
+    }
   }
 
   function drawBud(sh, x, y, swell, green, key) {
@@ -392,20 +445,38 @@
     const ped = 9 + 5 * hangT;
     const ax = x + side * 6, ay = y + 2;
     const ex = ax + Math.sin(angle) * ped, ey = ay + Math.cos(angle) * ped;
-    pencil([[x, y], [ax, ay], [ex, ey]], alpha * .7, 1.1, key);
+    pencil([[x, y], [ax, ay], [ex, ey]], alpha * .75, 1.3, key);
     const ca = Math.cos(angle), sa = Math.sin(angle);
     const place = b => [ex + (b.v * scale) * ca + (b.u * scale) * sa, ey - (b.v * scale) * sa + (b.u * scale) * ca];
     const tip = place({ u: c.len * .92, v: 0 });
-    pencil([[ex, ey], [(ex + tip[0]) / 2, (ey + tip[1]) / 2], tip], alpha * .4, .8, key + 1);    // the stalk inside
-    if (set <= 0) {             // flower buds, then the caps lifting off as it flowers
+    pencil([[ex, ey], [(ex + tip[0]) / 2, (ey + tip[1]) / 2], tip], alpha * .45, .9, key + 1);   // main stalk
+    // the branched frame: side branches and the little stalks to each flower or berry
+    ctx.strokeStyle = ink(alpha * (set > 0 ? .22 : .42)); ctx.lineWidth = .6;
+    ctx.beginPath();
+    c.berries.forEach(b => {
+      const a0 = place({ u: b.u * .9, v: 0 }), [bx, by] = place(b);
+      ctx.moveTo(a0[0], a0[1]); ctx.lineTo(bx, by);
+    });
+    ctx.stroke();
+    if (set <= 0) {             // flower buds in little bunches, then caps lifting off to show the stamens
       c.berries.forEach(b => {
         const [bx, by] = place(b);
-        ctx.fillStyle = ink(alpha * (back ? .35 : .55));
-        ctx.beginPath(); ctx.arc(bx, by, 1.5 + form * .4, 0, Math.PI * 2); ctx.fill();
+        const r = 1.4 + form * .5;
+        ctx.fillStyle = `rgba(214,214,210,${alpha})`;
+        ctx.beginPath(); ctx.ellipse(bx, by, r, r * 1.25, angle, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = ink(alpha * (back ? .4 : .62)); ctx.lineWidth = .7; ctx.stroke();
         if (flower > 0 && b.t < flower) {
-          ctx.strokeStyle = ink(alpha * .45); ctx.lineWidth = .55; ctx.beginPath();
-          for (let k = 0; k < 5; k++) { const a = k / 5 * Math.PI * 2 + b.z * 6; ctx.moveTo(bx, by); ctx.lineTo(bx + Math.cos(a) * 3.4, by + Math.sin(a) * 3.4); }
+          ctx.strokeStyle = ink(alpha * .5); ctx.lineWidth = .5; ctx.beginPath();
+          for (let k = 0; k < 5; k++) {
+            const a = k / 5 * Math.PI * 2 + b.z * 6, ex2 = bx + Math.cos(a) * 3.6, ey2 = by + Math.sin(a) * 3.6;
+            ctx.moveTo(bx, by); ctx.lineTo(ex2, ey2); ctx.moveTo(ex2 + .7, ey2); ctx.arc(ex2, ey2, .7, 0, Math.PI * 2);
+          }
           ctx.stroke();
+          if (b.fr < .4) {      // a cap (calyptra) falling away
+            const fall = (flower - b.t) * 14;
+            ctx.strokeStyle = ink(alpha * .45 * (1 - clamp01(fall / 10)));
+            ctx.beginPath(); ctx.arc(bx + fall * .4, by + fall, 1.2, Math.PI, 0); ctx.stroke();
+          }
         }
       });
       return;
@@ -414,32 +485,66 @@
     c.berries.forEach(b => {
       const [bx, by] = place(b);
       const r = R * b.rr;
-      const colour = vineDark ? smooth((m - 6.9 - b.t * .55) / .25) : smooth((m - 6.9 - b.t * .55) / .3) * .35;
-      const g = Math.round(mix(back ? 226 : 238, vineDark ? 62 : 205, colour) - b.z * 14);
-      ctx.fillStyle = `rgba(${g},${g},${g - 2},${alpha})`;
-      ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = ink(alpha * (.18 + colour * .2)); ctx.lineWidth = r * .45;          // form shadow
-      ctx.beginPath(); ctx.arc(bx, by, r * .72, .1, 2.1); ctx.stroke();
-      ctx.strokeStyle = ink(alpha * (back ? .4 : .6)); ctx.lineWidth = .85;
-      ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = `rgba(255,255,255,${alpha * (vineDark && colour > .5 ? .55 : .85)})`;  // highlight (bloom on dark skins)
-      ctx.beginPath(); ctx.arc(bx - r * .35, by - r * .38, Math.max(.7, r * .2), 0, Math.PI * 2); ctx.fill();
+      const lag = b.t * .6;
+      const colour = smooth((m - 6.9 - lag) / (vineDark ? .25 : .35));
+      const ry = r * (vineDark ? 1.08 : 1);
+      if (vineDark) {
+        // green, then blushing and darkening berry by berry to blue-black
+        const g = Math.round(mix(back ? 222 : 232, 58, colour) - b.z * 12);
+        ctx.fillStyle = `rgba(${g},${g},${g + 2},${alpha})`;
+      } else {
+        // green, ripening to a translucent green-gold
+        const g = Math.round(mix(back ? 226 : 236, 214, colour) - b.z * 12);
+        ctx.fillStyle = `rgba(${g},${g},${g - 6},${alpha})`;
+      }
+      ctx.beginPath(); ctx.ellipse(bx, by, r, ry, angle * .3 + b.rot, 0, Math.PI * 2); ctx.fill();
+      if (!vineDark) {          // light passing through the skin
+        const glow = ctx.createRadialGradient(bx + r * .15, by + r * .2, 0, bx, by, r);
+        glow.addColorStop(0, `rgba(255,255,250,${alpha * .45})`); glow.addColorStop(1, 'rgba(255,255,250,0)');
+        ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = ink(alpha * (.16 + colour * (vineDark ? .25 : .08))); ctx.lineWidth = r * .42;   // form shadow
+      ctx.beginPath(); ctx.ellipse(bx, by, r * .72, ry * .72, 0, .15, 2.2); ctx.stroke();
+      ctx.strokeStyle = ink(alpha * (back ? .38 : .58)); ctx.lineWidth = .8;
+      ctx.beginPath(); ctx.ellipse(bx, by, r, ry, angle * .3 + b.rot, 0, Math.PI * 2); ctx.stroke();
+      if (vineDark && colour > .3) {   // the dusty bloom on a dark skin
+        ctx.fillStyle = `rgba(205,205,210,${alpha * .2 * colour})`;
+        ctx.beginPath(); ctx.ellipse(bx - r * .1, by - r * .15, r * .8, ry * .75, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(235,235,240,${alpha * .45})`;
+        ctx.beginPath(); ctx.ellipse(bx - r * .32, by - r * .4, r * .32, r * .2, -.6, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.fillStyle = `rgba(255,255,255,${alpha * .9})`;
+        ctx.beginPath(); ctx.arc(bx - r * .35, by - r * .38, Math.max(.7, r * .2), 0, Math.PI * 2); ctx.fill();
+      }
+      if (!vineDark && colour > .55 && b.fr < .45) {   // sun freckles on ripe Chardonnay
+        ctx.fillStyle = ink(alpha * .45);
+        for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(bx + r * (.2 + k * .15), by + r * (.1 + (k % 2) * .25), .55, 0, Math.PI * 2); ctx.fill(); }
+      }
     });
   }
 
   function drawTendril(t, x, y, side, grow, wood, alpha, key) {
     if (grow <= 0) return;
-    const pts = [[x, y]];
     const len = t.len * grow;
-    let px = x, py = y, a = side * 1.1;
-    for (let i = 0; i < 10; i++) { px += Math.sin(a) * len / 10; py -= Math.cos(a) * len / 10; a -= side * .07; pts.push([px, py]); }
-    const turns = t.turns * grow;
-    const steps = Math.round(18 * turns);
-    for (let i = 1; i <= steps; i++) {
-      const q = i / 18 * Math.PI * 2, rad = 5 * (1 - i / (steps + 1));
-      pts.push([px + side * (1 - Math.cos(q)) * rad, py - Math.sin(q) * rad]);
-    }
-    pencil(pts, alpha * (wood ? .6 : .5), wood ? 1 : .8, key);
+    const stem = [[x, y]];
+    let px = x, py = y, a = side * 1.05;
+    const steps = 10, forkAt = Math.round(steps * t.fork);
+    for (let i = 0; i < forkAt; i++) { px += Math.sin(a) * len / steps; py -= Math.cos(a) * len / steps; a -= side * .05; stem.push([px, py]); }
+    pencil(stem, alpha * (wood ? .6 : .5), wood ? 1.1 : .9, key);
+    // grape tendrils fork in two; each arm ends in a coil
+    [[-.45, 1], [.4, .7]].forEach(([da, lf], j) => {
+      let qx = px, qy = py, b = a + side * da;
+      const arm = [[qx, qy]];
+      const n = Math.round((steps - forkAt) * lf);
+      for (let i = 0; i < n; i++) { qx += Math.sin(b) * len / steps; qy -= Math.cos(b) * len / steps; b -= side * .08; arm.push([qx, qy]); }
+      const turns = t.turns * grow * lf;
+      const cs = Math.round(16 * turns);
+      for (let i = 1; i <= cs; i++) {
+        const q = i / 16 * Math.PI * 2, rad = (4.5 - j) * (1 - i / (cs + 1));
+        arm.push([qx + side * (1 - Math.cos(q)) * rad, qy - Math.sin(q) * rad]);
+      }
+      pencil(arm, alpha * (wood ? .55 : .45), wood ? .9 : .7, key + 3 + j);
+    });
   }
 
   function scene(p, time) {
@@ -447,20 +552,20 @@
     if (bare.complete && bare.naturalWidth) ctx.drawImage(bare, 0, 0, IW, IH);
 
     const oldCanes = 1 - span(m, .9, 1.6);              // last year's wood until pruning
-    const swell = span(m, 2.4, 2.9), green = span(m, 2.85, 3.3);
-    const grow = smooth((m - 3.05) / 2.6);              // fast spring growth, done by June
     const wood = m < 1.7 ? 1 : span(m, 8.3, 9.3);
         const turn = span(m, 8.6, 9.8);
     const wind = Math.sin(time * 1.3) * .03 + Math.sin(time * .41) * .02;
 
-    if (m >= 1.4 && m < 3.4) {                         // budded spurs: dormant, swelling, green tip
-      const fade = 1 - span(m, 3.2, 3.4);
-      shoots.forEach(sh => drawBud(sh, sh.x0, CORD - 1, swell, green * fade, sh.key + 1));
-    }
+    shoots.forEach(sh => {                             // budded spurs: dormant, swelling, green tip
+      const mv = m - sh.v.shift;
+      if (mv < 1.4 || mv >= 3.4) return;
+      drawBud(sh, sh.x0, CORD - 1, span(mv, 2.4, 2.9), span(mv, 2.85, 3.3) * (1 - span(mv, 3.2, 3.4)), sh.key + 1);
+    });
 
     shoots.forEach(sh => {
       if (m < 1.7 && oldCanes <= 0) return;
-      const len = m < 1.7 ? sh.L : sh.L * grow;
+      const mv = m - sh.v.shift;
+      const len = m < 1.7 ? sh.L : sh.L * smooth((mv - 3.05) / (sh.v.dark ? 2.75 : 2.5));
       if (len < 4) return;
       const alphaShoot = (m < 1.7 ? oldCanes : 1) * (sh.back ? .62 : 1);
       const pts = [];
@@ -483,7 +588,7 @@
         }
         if (nd.cluster && m >= 3.3 && m < 8.6) {        // clusters opposite the leaf, picked in August
           const picked = span(m, 7.7 + nd.cluster.delay * .35, 7.95 + nd.cluster.delay * .35);
-          later.push(() => drawCluster(nd.cluster, nx, ny, -nd.side, m, sh.v.dark, (1 - picked) * (sh.back ? .7 : 1), sh.back, sh.key + nd.n * 11));
+          later.push(() => drawCluster(nd.cluster, nx, ny, -nd.side, mv, sh.v.dark, (1 - picked) * (sh.back ? .7 : 1), sh.back, sh.key + nd.n * 11));
         }
         if (m >= 3.0 && m < 11.6) {
           // leaves open from the tip: small, folded and upright at first, then
@@ -502,7 +607,7 @@
           if (drop >= 1 || alpha <= .01) return;
           const autumn = clamp01((turn - nd.delay * .35) / .65);
           const ang = nd.side * mix(.1, nd.tilt, smooth(lage * 1.3)) + sh.lean + wind * nd.flutter * Math.sin(time * (.9 + nd.flutter) + nd.phase) * 1.6 + drop * nd.spin;
-          const pet = size * .42 * mix(.45, 1, unfold);                       // the petiole carries the blade out from the node
+          const pet = size * sh.v.pet * mix(.45, 1, unfold);                       // the petiole carries the blade out from the node
           const px0 = nx + Math.sin(ang) * pet * .9, py0 = ny - Math.cos(ang) * pet * .9 + 2;
           const fx = px0 + nd.drift * drop * drop + Math.sin(drop * 9 + nd.n) * 14 * drop;
           const fy = py0 + (GROUND - py0) * drop * drop;
@@ -521,15 +626,15 @@
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.font = `30px ${font}`;
     ctx.fillStyle = 'rgba(40,40,38,.85)';
-    ctx.fillText(stageName(m), IW / 2, 52);
-    const x0 = 560, x1 = 1214, y = 102;
+    ctx.fillText(stageName(m), IW / 2, 34);
+    const x0 = 560, x1 = 1214, y = 66;
     pencil([[x0, y], [x1, y]], .4, 1.1, 900);
     ctx.font = `15px ${font}`;
     MONTHS.forEach((name, i) => {
       const x = x0 + (x1 - x0) * (i + .5) / 12;
       pencil([[x, y - 4], [x, y + 4]], .35, 1, 910 + i);
       ctx.fillStyle = `rgba(40,40,38,${Math.floor(m) === i ? .9 : .38})`;
-      ctx.fillText(name.toUpperCase(), x, y + 21);
+      ctx.fillText(name.toUpperCase(), x, y + 19);
     });
     ctx.fillStyle = 'rgba(40,40,38,.85)';
     ctx.beginPath(); ctx.arc(x0 + (x1 - x0) * p, y, 5, 0, Math.PI * 2); ctx.fill();
