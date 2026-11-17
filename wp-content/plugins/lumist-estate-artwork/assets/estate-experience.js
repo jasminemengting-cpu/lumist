@@ -87,7 +87,8 @@
     }
   }
   // Content the bubbles should pass behind: they fade out smoothly as they near it.
-  const FADE = 64;                       // px of soft edge around text and drawings
+  const FADE = 48;                       // px of soft edge around text and drawings
+  const FLOOR = .28;                     // how much of a bubble still shows over content
   let blocks = [];                       // page-space rects
   function collectBlocks() {
     const sel = 'main :is(h1,h2,h3,h4,p,dl,li,blockquote,figcaption,.kicker,.kick,.eyebrow,.zoomnext,.masthead,.motto,.lead,.crumb,img,canvas#inbottle,.addr,.site,.btn)';
@@ -105,10 +106,10 @@
       const l = k.l - sx, r = k.r - sx;
       const dx = Math.max(l - x, 0, x - r), dy = Math.max(t - y, 0, y - b);
       const dist = Math.hypot(dx, dy) - radius;
-      if (dist < d) { d = dist; if (d <= 0) return 0; }
+      if (dist < d) { d = dist; if (d <= 0) return FLOOR; }
     }
     if (d >= FADE) return 1;
-    const u = d / FADE; return u * u * (3 - 2 * u);
+    const u = d / FADE; return FLOOR + (1 - FLOOR) * u * u * (3 - 2 * u);
   }
   addEventListener('load', collectBlocks);
   addEventListener('resize', collectBlocks);
@@ -126,7 +127,7 @@
       const fade = Math.min(1, progress * 12, (1 - progress) * 12);
       const alpha = bubble.alpha * fade;
       const hide = contentFade(x, y, radius);
-      if (hide > .01) paperBubble(airCtx, x, y, radius, alpha * hide);
+      paperBubble(airCtx, x, y, radius, alpha * hide);
     }
   }
   function sphere(x, y, radius, alpha) {
