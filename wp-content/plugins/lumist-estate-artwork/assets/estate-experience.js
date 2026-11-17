@@ -179,7 +179,7 @@
     const dpr = Math.min(devicePixelRatio || 1, 2);
     air.width = Math.round(airWidth * dpr); air.height = Math.round(airHeight * dpr);
     airCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ambient = Array.from({ length: Math.min(80, Math.max(22, Math.round(airWidth * airHeight / 15000))) }, () => {
+    ambient = Array.from({ length: Math.min(36, Math.max(10, Math.round(airWidth * airHeight / 34000))) }, () => {
       const radius = random() < .12 ? 10 + random() * 8 : 3 + random() * 4.5;
       return { x: random(), phase: random(), rate: (4 + radius * .7) / (airHeight + 48),
         radius, alpha: .21 + random() * .075, sway: random() * Math.PI * 2 };
