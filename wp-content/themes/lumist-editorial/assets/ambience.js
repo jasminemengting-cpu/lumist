@@ -9,7 +9,7 @@
   const KEY = 'lumist-ambience';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let ctx = null, master = null, on = false, birdTimer = 0, waveTimer = 0, gust = 0;
-  let windGain, whistleGain, leafGain, windFilter, birdFn = null;
+  let windGain, whistleGain, leafGain, windFilter, birdFn = null, rustleFn = null, leafTimer = 0, lastRustle = 0;
 
   const css = `
   .lumist-ambience{position:fixed;left:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:260;
@@ -86,15 +86,46 @@
 
     // Gust whistle through the trellis wires.
     const whistle = ctx.createBiquadFilter(); whistle.type = 'bandpass'; whistle.frequency.value = 1150; whistle.Q.value = 9;
-    whistleGain = ctx.createGain(); whistleGain.gain.value = .018;
+    whistleGain = ctx.createGain(); whistleGain.gain.value = .007;
     loop(noiseBuffer('pink', 7)).connect(whistle); whistle.connect(whistleGain); whistleGain.connect(master);
-    lfo(.11, 380, whistle.frequency); lfo(.05, .012, whistleGain.gain, 1);
+    lfo(.11, 380, whistle.frequency); lfo(.05, .005, whistleGain.gain, 1);
 
-    // Vine leaves rustling in the gusts.
-    const leaves = ctx.createBiquadFilter(); leaves.type = 'highpass'; leaves.frequency.value = 3200;
-    leafGain = ctx.createGain(); leafGain.gain.value = .012;
-    loop(noiseBuffer('white', 5)).connect(leaves); leaves.connect(leafGain); leafGain.connect(master);
-    const flutter = lfo(5.5, .009, leafGain.gain); lfo(.09, 3, flutter.frequency);
+    // Vine leaves: no constant hiss. Each gust is a short cloud of tiny, irregular leaf
+    // contacts that swells and fades, then the vines go quiet again.
+    leafGain = ctx.createGain(); leafGain.gain.value = .9;
+    const leafBand = ctx.createBiquadFilter(); leafBand.type = 'bandpass'; leafBand.frequency.value = 2600; leafBand.Q.value = .8;
+    const leafSoft = ctx.createBiquadFilter(); leafSoft.type = 'lowpass'; leafSoft.frequency.value = 6500;
+    leafGain.connect(leafBand); leafBand.connect(leafSoft); leafSoft.connect(master); leafSoft.connect(space);
+    function rustleBuffer(seconds, density) {
+      const sr = ctx.sampleRate, len = Math.floor(sr * seconds), buf = ctx.createBuffer(2, len, sr);
+      for (let ch = 0; ch < 2; ch++) {
+        const d = buf.getChannelData(ch);
+        let i = 0;
+        while (i < len) {
+          const x = i / len, env = Math.pow(Math.sin(Math.PI * x), 1.6);       // swell and fade
+          const gap = Math.max(1, Math.floor(sr / (40 + density * 900 * env) * (.3 + Math.random() * 1.7)));
+          const amp = (.15 + Math.random() * .85) * env, dur = Math.floor(sr * (.0015 + Math.random() * .006));
+          for (let k = 0; k < dur && i + k < len; k++) d[i + k] += (Math.random() * 2 - 1) * amp * Math.pow(1 - k / dur, 2);
+          i += gap;
+        }
+      }
+      return buf;
+    }
+    const rustles = [rustleBuffer(2.4, .5), rustleBuffer(3.4, .8), rustleBuffer(1.6, .35)];
+    rustleFn = (strength = .5) => {
+      const src = ctx.createBufferSource(), g = ctx.createGain();
+      src.buffer = rustles[Math.floor(Math.random() * rustles.length)];
+      src.playbackRate.value = .85 + Math.random() * .3;
+      g.gain.value = (.025 + Math.random() * .025) * (.6 + strength);
+      let out = g;
+      if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = Math.random() * 1.4 - .7; g.connect(p); out = p; }
+      src.connect(g); out.connect(leafGain); src.start();
+    };
+    function leafLoop() {
+      if (on && !document.hidden) rustleFn(Math.random() * .6);
+      leafTimer = setTimeout(leafLoop, 6000 + Math.random() * 10000);
+    }
+    leafTimer = setTimeout(leafLoop, 4000);
 
     // Water at the marsh edge: pink noise, small slow laps.
     const water = ctx.createBiquadFilter(); water.type = 'lowpass'; water.frequency.value = 700;
@@ -148,9 +179,8 @@
     gust = Math.min(1, gust + v * .5);
     const t = ctx.currentTime;
     windGain.gain.setTargetAtTime(.32 + gust * .22, t, .15);
-    leafGain.gain.setTargetAtTime(.012 + gust * .02, t, .1);
     windGain.gain.setTargetAtTime(.32, t + .5, .9);
-    leafGain.gain.setTargetAtTime(.012, t + .5, .9);
+    if (rustleFn && gust > .35 && now - lastRustle > 1800) { lastRustle = now; rustleFn(gust); }
     setTimeout(() => { gust *= .5; }, 400);
   }, { passive: true });
 
