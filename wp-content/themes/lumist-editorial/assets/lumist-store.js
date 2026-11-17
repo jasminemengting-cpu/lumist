@@ -297,6 +297,15 @@
     if (rem) cart.remove(+rem.dataset.lsRemove);
   }, true);
   addEventListener('storage', e => { if (e.key && e.key.startsWith('lumist-')) { render(); renderMemberPage(); } });
+  // Keep every page in step with the bag: other tabs, the back/forward cache, returning to a tab.
+  addEventListener('pageshow', () => { render(); renderMemberPage(); });
+  addEventListener('focus', () => render());
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+  // If an older copy of the cart page is served without the bag container, add it.
+  if (/\/cart\/?$/.test(location.pathname) && !document.getElementById('lumist-cart-page')) {
+    const main = document.querySelector('main');
+    if (main) main.innerHTML = '<h1>Your bag</h1><div class="page-body"><div id="lumist-cart-page"></div></div>';
+  }
 
   render(); renderMemberPage();
 })();
