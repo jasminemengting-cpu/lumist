@@ -4,8 +4,7 @@
    spurs, woolly buds, budbreak, shoots climbing between the catch wires with
    alternate leaves, flower clusters opposite the basal leaves and tendrils
    opposite the upper ones, flowering, fruit set, leaf thinning around the fruit,
-   berries swelling and colouring berry by berry, an early pick for sparkling
-   wine, canes hardening, leaves turning and falling. Click again to return to
+   berries swelling and colouring berry by berry, harvest, canes hardening, leaves turning and falling. Click again to return to
    the still drawing. */
 (() => {
   const img = document.querySelector('img.estate-art[src*="03-vineyard-row"]');
@@ -341,10 +340,11 @@
     if (m < 3.4) return 'Spring · budbreak';
     if (m < 4.8) return 'Spring · shoots climb, flower clusters form';
     if (m < 5.4) return 'Late spring · flowering';
-    if (m < 6.1) return 'Early summer · fruit set, leaves thinned around the fruit';
+    if (m < 6.0) return 'Early summer · fruit set';
+    if (m < 6.65) return 'Summer · leaf thinning around the fruit';
     if (m < 6.9) return 'Summer · berries swell, clusters close';
     if (m < 7.6) return 'Summer · colour change, berry by berry';
-    if (m < 8.3) return 'Picked early, for bubbles';
+    if (m < 8.3) return 'Harvest';
     if (m < 9.5) return 'Autumn · canes harden, leaves turn';
     if (m < 11.2) return 'Autumn · leaves fall';
     return 'Winter · dormant canes';
@@ -450,8 +450,7 @@
     const swell = span(m, 2.4, 2.9), green = span(m, 2.85, 3.3);
     const grow = smooth((m - 3.05) / 2.6);              // fast spring growth, done by June
     const wood = m < 1.7 ? 1 : span(m, 8.3, 9.3);
-    const thin = span(m, 5.7, 6.1);                    // leaf pulling in the fruit zone
-    const turn = span(m, 8.6, 9.8);
+        const turn = span(m, 8.6, 9.8);
     const wind = Math.sin(time * 1.3) * .03 + Math.sin(time * .41) * .02;
 
     if (m >= 1.4 && m < 3.4) {                         // budded spurs: dormant, swelling, green tip
@@ -494,9 +493,12 @@
           const unfold = smooth(clamp01(lage * 4 + .15));
           const young = 1 - smooth(clamp01(lage * 2.2));
           let alpha = 1;
-          if (nd.n <= 3 && !sh.back) alpha *= 1 - thin * (nd.n === 3 ? .7 : 1);   // fruit-zone leaves pulled
+          // leaf thinning: the leaves around the clusters are picked off one by one
+          // and drop to the ground, opening the fruit to light and air
+          const thinned = sh.back ? nd.n <= 1 : nd.n <= 3;
+          const pulled = thinned ? clamp01((m - 6.05 - nd.delay * .4) / .22) : 0;
           const dropAt = 9.6 + nd.delay * 1.3 - (nd.n / 14) * .5;
-          const drop = clamp01((m - dropAt) / .9);
+          const drop = Math.max(clamp01((m - dropAt) / .9), pulled);
           if (drop >= 1 || alpha <= .01) return;
           const autumn = clamp01((turn - nd.delay * .35) / .65);
           const ang = nd.side * mix(.1, nd.tilt, smooth(lage * 1.3)) + sh.lean + wind * nd.flutter * Math.sin(time * (.9 + nd.flutter) + nd.phase) * 1.6 + drop * nd.spin;
