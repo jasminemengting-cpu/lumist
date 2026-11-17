@@ -1,6 +1,7 @@
 /* LUMIST · Carneros ambience
    A soundscape synthesised in the browser (no recordings): wind off San Pablo Bay,
-   water at the marsh edge, vine leaves in the gusts, and the odd marsh bird.
+   water at the marsh edge, vine leaves in the gusts, the odd marsh bird, and an
+   original, unhurried piano theme written for LUMIST.
    Off by default; a visitor turns it on. The choice is remembered between pages. */
 (() => {
   'use strict';
@@ -10,6 +11,7 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let ctx = null, master = null, on = false, birdTimer = 0, waveTimer = 0, gust = 0;
   let windGain, whistleGain, leafGain, windFilter, birdFn = null, rustleFn = null, leafTimer = 0, lastRustle = 0;
+  let pianoFn = null, pianoTimer = 0, pianoBus = null;
 
   const css = `
   .lumist-ambience{position:fixed;left:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:260;
@@ -34,7 +36,7 @@
   const label = btn.querySelector('.label');
   function paint() {
     btn.setAttribute('aria-pressed', String(on));
-    btn.setAttribute('aria-label', on ? 'Turn off the sound of Carneros' : 'Play the sound of Carneros: wind, bay water and marsh birds');
+    btn.setAttribute('aria-label', on ? 'Turn off the sound of Carneros' : 'Play the sound of Carneros: wind, bay water, marsh birds and a quiet piano');
     label.textContent = on ? 'Sound of Carneros · on' : 'Sound of Carneros';
   }
   paint();
@@ -168,6 +170,85 @@
       birdTimer = setTimeout(bird, 7000 + Math.random() * 14000);
     }
     birdFn = bird;
+
+    // ---------- Piano: an original, slow, sparse theme (F major, about 62 bpm) ----------
+    // Written for LUMIST; phrases are generated from the chords below, so it never loops exactly.
+    pianoBus = ctx.createGain(); pianoBus.gain.value = .34;
+    const warm = ctx.createBiquadFilter(); warm.type = 'lowpass'; warm.frequency.value = 5200; warm.Q.value = .3;
+    pianoBus.connect(warm); warm.connect(master);
+    const pianoSend = ctx.createGain(); pianoSend.gain.value = .9; warm.connect(pianoSend); pianoSend.connect(space);
+    const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+    function note(t, m, vel) {
+      const f = hz(m), dur = Math.min(7, Math.max(2.2, 2.4 + (84 - m) * .09));
+      const env = ctx.createGain(), tone = ctx.createBiquadFilter();
+      tone.type = 'lowpass'; tone.Q.value = .5;
+      tone.frequency.setValueAtTime(Math.min(9000, f * (6 + vel * 8)), t);
+      tone.frequency.setTargetAtTime(Math.max(400, f * 2.2), t + .02, dur / 5);
+      env.gain.setValueAtTime(0, t);
+      env.gain.linearRampToValueAtTime(vel, t + .005);
+      env.gain.setTargetAtTime(vel * .45, t + .005, .09);
+      env.gain.setTargetAtTime(.0001, t + .2, dur / 4.2);
+      let out = env;
+      if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = Math.max(-.6, Math.min(.6, (m - 62) / 30)); env.connect(p); out = p; }
+      tone.connect(env); out.connect(pianoBus);
+      const parts = [1, .5, .26, .14, .08, .04];
+      parts.forEach((a, i) => {
+        const k = i + 1, fk = f * k * (1 + .00035 * k * k);
+        if (fk > 9000) return;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = fk; g.gain.value = a / 2.2;
+        o.connect(g); g.connect(tone); o.start(t); o.stop(t + dur + .6);
+        if (k === 1) { // a second string, a hair out of tune, for warmth
+          const o2 = ctx.createOscillator(), g2 = ctx.createGain();
+          o2.type = 'sine'; o2.frequency.value = fk * 1.0009; g2.gain.value = a / 3.4;
+          o2.connect(g2); g2.connect(tone); o2.start(t); o2.stop(t + dur + .6);
+        }
+      });
+      // felt hammer
+      const n = ctx.createBufferSource(), nb = ctx.createBuffer(1, Math.floor(ctx.sampleRate * .03), ctx.sampleRate), d = nb.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3);
+      const nf = ctx.createBiquadFilter(), ng = ctx.createGain();
+      nf.type = 'bandpass'; nf.frequency.value = Math.min(6000, f * 3); nf.Q.value = 1.2; ng.gain.value = vel * .05;
+      n.buffer = nb; n.connect(nf); nf.connect(ng); ng.connect(pianoBus); n.start(t);
+    }
+    // Chords as MIDI notes: left hand (low) and the tones the right hand may use.
+    const CH = {
+      F:  { lh: [41, 48, 52, 57], rh: [65, 69, 72, 76, 77] },          // Fmaj7
+      Am: { lh: [45, 52, 55, 60], rh: [64, 67, 69, 72, 76] },          // Am7
+      Dm: { lh: [38, 45, 53, 60, 64], rh: [62, 65, 69, 72, 74, 76] },  // Dm9
+      Bb: { lh: [46, 53, 57, 62], rh: [65, 69, 70, 72, 74, 77] },      // Bbmaj7(add 9)
+      C:  { lh: [48, 55, 62, 64], rh: [64, 67, 69, 72, 74, 79] },      // C6/9
+      Gm: { lh: [43, 50, 53, 58], rh: [62, 65, 67, 70, 74] },          // Gm7
+    };
+    const ROUTES = [['F', 'Am', 'Dm', 'Bb'], ['Dm', 'Bb', 'F', 'C'], ['Bb', 'F', 'Gm', 'C'], ['F', 'C', 'Dm', 'Bb'], ['Am', 'Dm', 'Bb', 'C']];
+    const SCALE = [60, 62, 64, 65, 67, 69, 70, 72, 74, 76, 77, 79, 81];
+    let prev = 72;
+    function phrase() {
+      if (!on) return;
+      const beat = 60 / (58 + Math.random() * 8);
+      const route = ROUTES[Math.floor(Math.random() * ROUTES.length)];
+      let t = ctx.currentTime + .15;
+      const human = () => (Math.random() - .5) * .04;
+      route.forEach((name, bar) => {
+        const c = CH[name], last = bar === route.length - 1;
+        // left hand: a slow roll up from the bass
+        c.lh.forEach((m, i) => note(t + i * (.07 + Math.random() * .04) + human(), m, .16 + Math.random() * .05 - i * .012));
+        if (Math.random() < .5) note(t + beat * 2 + human(), c.lh[0] + 12, .09);
+        // right hand: a few notes, mostly stepwise, with room around them
+        const slots = last ? [0, 1, 2] : [0, 1, 1.5, 2, 3, 3.5].filter(() => Math.random() < .42);
+        slots.forEach((b, i) => {
+          const pool = (Math.random() < .7 ? c.rh : SCALE).filter(m => Math.abs(m - prev) <= 5);
+          let m = pool.length ? pool[Math.floor(Math.random() * pool.length)] : c.rh[Math.floor(Math.random() * c.rh.length)];
+          if (last && i === slots.length - 1) m = c.rh.reduce((a, x) => Math.abs(x - prev) < Math.abs(a - prev) ? x : a, c.rh[0]);
+          prev = m;
+          note(t + b * beat + .02 + human(), m, .2 + Math.random() * .08);
+        });
+        t += beat * 4;
+      });
+      // let the last chord ring, then a long rest before the next thought
+      pianoTimer = setTimeout(phrase, (t - ctx.currentTime + 4 + Math.random() * 7) * 1000);
+    }
+    pianoFn = phrase;
   }
 
   // Scrolling stirs the air a little, like the page's bubbles.
@@ -191,10 +272,11 @@
     master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.setTargetAtTime(.55, ctx.currentTime, .9);
     clearTimeout(birdTimer); if (birdFn) birdTimer = setTimeout(birdFn, 2500);
+    clearTimeout(pianoTimer); if (pianoFn) pianoTimer = setTimeout(pianoFn, 3500);
     try { localStorage.setItem(KEY, 'on'); } catch (e) {}
   }
   function stop(remember = true) {
-    on = false; paint();
+    on = false; paint(); clearTimeout(pianoTimer);
     if (ctx) { master.gain.setTargetAtTime(0, ctx.currentTime, .35); setTimeout(() => { if (!on) ctx.suspend(); }, 1600); }
     if (remember) { try { localStorage.setItem(KEY, 'off'); } catch (e) {} }
   }
