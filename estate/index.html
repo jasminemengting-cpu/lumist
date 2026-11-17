@@ -93,8 +93,14 @@ var woocommerce_params = {"ajax_url":"/wp-admin/admin-ajax.php","wc_ajax_url":"/
 	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
 	<style id="estate-paper-tone">
 /* Estate: a slightly lighter sheet of paper, grain kept */
-body.page-id-17{background-color:#F2F2F2 !important}
+body.page-id-17{--estate-paper:#F2F2F2;background-color:var(--estate-paper) !important}
 body.page-id-17::after{opacity:.27 !important}
+/* Bubbles stay behind the content: drawings and text sit on the same paper colour,
+   so a passing bubble disappears behind them (the grain layer still covers everything). */
+body.page-id-17 main .estate-art-figure,
+body.page-id-17 main img.estate-art{background-color:var(--estate-paper)}
+body.page-id-17 main :is(h1,h2,h3,h4,p,dt,dd,li,blockquote,figcaption,.kicker,.kick,.eyebrow,.zoomnext,.masthead,.motto,.lead,.crumb):not(.addr *, .site *, .btn, .btn *, .estate-effervescence *, .estate-breadcrumb *){
+  background-color:var(--estate-paper);box-shadow:0 0 0 .4em var(--estate-paper)}
 </style>
 </head><body class="bp-nouveau wp-singular page-template-default page page-id-17 wp-embed-responsive wp-theme-lumist-editorial theme-lumist-editorial woocommerce-no-js"><a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
