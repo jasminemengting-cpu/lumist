@@ -50,6 +50,42 @@
     lane: [.455, .5, .548][i % 3], phase: random(), rate: .032 + random() * .024,
     radius: .65 + random() * 1.6, depth: random(), sway: random() * Math.PI * 2,
   }));
+  // A bubble on paper: soft cast shadow, refracting body, dark lower rim,
+  // bright upper rim, a sharp specular highlight and a faint reflected light.
+  function paperBubble(c, x, y, r, a) {
+    const k = Math.min(1, a * 3.8);
+    const shadow = c.createRadialGradient(x + r * .28, y + r * .38, r * .2, x + r * .28, y + r * .38, r * 1.3);
+    shadow.addColorStop(0, `rgba(0,0,0,${a * .3})`); shadow.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = shadow; c.beginPath(); c.arc(x + r * .28, y + r * .38, r * 1.3, 0, Math.PI * 2); c.fill();
+    const body = c.createRadialGradient(x - r * .22, y - r * .28, r * .08, x, y, r);
+    body.addColorStop(0, `rgba(255,255,255,${k * .55})`);
+    body.addColorStop(.5, `rgba(255,255,255,${k * .08})`);
+    body.addColorStop(.8, `rgba(110,110,110,${k * .1})`);
+    body.addColorStop(.95, `rgba(45,45,45,${k * .42})`);
+    body.addColorStop(1, 'rgba(45,45,45,0)');
+    c.fillStyle = body; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill();
+    c.lineCap = 'round';
+    c.lineWidth = Math.max(.7, r * .07);
+    c.strokeStyle = `rgba(30,30,30,${k * .6})`;
+    c.beginPath(); c.arc(x, y, r * .93, -.15, Math.PI * .95); c.stroke();
+    c.lineWidth = Math.max(.6, r * .055);
+    c.strokeStyle = `rgba(255,255,255,${k * .95})`;
+    c.beginPath(); c.arc(x, y, r * .86, Math.PI * 1.08, Math.PI * 1.62); c.stroke();
+    if (r > 2.2) {
+      c.save(); c.translate(x - r * .36, y - r * .4); c.rotate(-.65);
+      const hi = c.createRadialGradient(0, 0, 0, 0, 0, r * .3);
+      hi.addColorStop(0, 'rgba(255,255,255,1)'); hi.addColorStop(.45, `rgba(255,255,255,${k})`); hi.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = hi; c.scale(1, .55); c.beginPath(); c.arc(0, 0, r * .3, 0, Math.PI * 2); c.fill();
+      c.restore();
+      c.save(); c.translate(x + r * .34, y + r * .44); c.rotate(-.65);
+      c.strokeStyle = `rgba(255,255,255,${k * .55})`; c.lineWidth = Math.max(.5, r * .05);
+      c.beginPath(); c.ellipse(0, 0, r * .3, r * .1, 0, Math.PI * .05, Math.PI * .95); c.stroke();
+      c.restore();
+    } else {
+      c.fillStyle = `rgba(255,255,255,${k})`;
+      c.beginPath(); c.arc(x - r * .35, y - r * .38, Math.max(.45, r * .22), 0, Math.PI * 2); c.fill();
+    }
+  }
   function drawAir() {
     if (!airCtx) return;
     airCtx.clearRect(0, 0, airWidth, airHeight);
@@ -61,19 +97,7 @@
       const radius = bubble.radius * (.86 + progress * .14);
       const fade = Math.min(1, progress * 12, (1 - progress) * 12);
       const alpha = bubble.alpha * fade;
-      const film = airCtx.createRadialGradient(x - radius * .25, y - radius * .3, 0, x, y, radius);
-      film.addColorStop(0, `rgba(255,255,255,${alpha * .15})`);
-      film.addColorStop(.72, 'rgba(100,100,100,0)');
-      film.addColorStop(.94, `rgba(80,80,80,${alpha * .28})`);
-      film.addColorStop(1, 'rgba(100,100,100,0)');
-      airCtx.fillStyle = film; airCtx.beginPath(); airCtx.arc(x, y, radius, 0, Math.PI * 2); airCtx.fill();
-      airCtx.lineWidth = .9;
-      airCtx.strokeStyle = `rgba(65,65,65,${alpha * .5})`;
-      airCtx.beginPath(); airCtx.arc(x, y, radius * .9, 0, Math.PI * 2); airCtx.stroke();
-      airCtx.strokeStyle = `rgba(65,65,65,${alpha})`;
-      airCtx.beginPath(); airCtx.arc(x, y, radius * .9, .12, Math.PI * .86); airCtx.stroke();
-      airCtx.strokeStyle = `rgba(255,255,255,${alpha * 1.4})`;
-      airCtx.beginPath(); airCtx.arc(x, y, radius * .84, Math.PI * 1.08, Math.PI * 1.62); airCtx.stroke();
+      paperBubble(airCtx, x, y, radius, alpha);
     }
   }
   function sphere(x, y, radius, alpha) {
@@ -89,6 +113,8 @@
     ctx.beginPath(); ctx.arc(x, y, radius * .86, Math.PI * 1.04, Math.PI * 1.55); ctx.stroke();
     ctx.strokeStyle = `rgba(196,202,196,${alpha * .35})`;
     ctx.beginPath(); ctx.arc(x, y, radius * .83, .06, .72); ctx.stroke();
+    ctx.fillStyle = `rgba(255,255,255,${Math.min(1, alpha * 1.3)})`;
+    ctx.beginPath(); ctx.arc(x - radius * .34, y - radius * .38, Math.max(.35, radius * .2), 0, Math.PI * 2); ctx.fill();
   }
   function draw() {
     ctx.clearRect(0, 0, width, height);
