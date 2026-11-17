@@ -18,6 +18,8 @@
   let pianoFn = null, pianoTimer = 0, pianoBus = null, loadSamplesFn = null;
 
   const css = `
+  /* room at the end of the page so the fixed button never sits on the footer text */
+  body{padding-bottom:calc(clamp(12px,2vw,24px) + 56px)}
   .lumist-ambience{position:fixed;left:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:260;
     display:inline-flex;align-items:center;gap:10px;padding:9px 14px 9px 12px;border:1px solid #212121;
     background:#FFFFFF;color:#212121;font:400 15px/1 "IM Fell English SC","IM Fell English",Georgia,serif;
