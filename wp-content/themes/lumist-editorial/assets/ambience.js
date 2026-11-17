@@ -1,17 +1,20 @@
 /* LUMIST · Carneros ambience
    A soundscape synthesised in the browser (no recordings): wind off San Pablo Bay,
    water at the marsh edge, vine leaves in the gusts, the odd marsh bird, and an
-   original, unhurried piano theme written for LUMIST.
+   original piano theme written for LUMIST, played on sampled
+   Salamander Grand Piano V3 recordings by Alexander Holm (CC BY 3.0).
    Off by default; a visitor turns it on. The choice is remembered between pages. */
 (() => {
   'use strict';
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
+  const ME = document.currentScript && document.currentScript.src;
+  const PIANO_BASE = ME ? new URL('piano/', ME).href : 'piano/';
   const KEY = 'lumist-ambience';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let ctx = null, master = null, on = false, birdTimer = 0, waveTimer = 0, gust = 0;
   let windGain, whistleGain, leafGain, windFilter, birdFn = null, rustleFn = null, leafTimer = 0, lastRustle = 0;
-  let pianoFn = null, pianoTimer = 0, pianoBus = null;
+  let pianoFn = null, pianoTimer = 0, pianoBus = null, loadSamplesFn = null;
 
   const css = `
   .lumist-ambience{position:fixed;left:clamp(12px,2vw,24px);bottom:clamp(12px,2vw,24px);z-index:260;
@@ -27,7 +30,11 @@
   .lumist-ambience .bars i:nth-child(2){animation-delay:.25s}.lumist-ambience .bars i:nth-child(3){animation-delay:.5s}
   @keyframes lumistBar{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
   @media (prefers-reduced-motion:reduce){.lumist-ambience[aria-pressed="true"] .bars i{animation:none;transform:scaleY(.6)}}
-  @media print{.lumist-ambience{display:none}}`;
+  .lumist-ambience-credit{position:fixed;left:clamp(12px,2vw,24px);bottom:calc(clamp(12px,2vw,24px) + 44px);z-index:260;
+    font:italic 12px/1.3 "EB Garamond",Georgia,serif;color:#555;background:rgba(255,255,255,.85);padding:3px 6px;display:none}
+  .lumist-ambience-credit a{color:inherit}
+  .lumist-ambience[aria-pressed="true"] + .lumist-ambience-credit{display:block}
+  @media print{.lumist-ambience,.lumist-ambience-credit{display:none}}`;
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
 
   const btn = document.createElement('button');
@@ -41,6 +48,10 @@
   }
   paint();
   document.body.appendChild(btn);
+  const credit = document.createElement('p');
+  credit.className = 'lumist-ambience-credit';
+  credit.innerHTML = 'Piano: <a href="https://archive.org/details/SalamanderGrandPianoV3" rel="noopener">Salamander Grand Piano</a>, Alexander Holm, <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener">CC BY 3.0</a>';
+  document.body.appendChild(credit);
 
   // ---------- building blocks ----------
   function noiseBuffer(kind, seconds = 6) {
@@ -171,120 +182,128 @@
     }
     birdFn = bird;
 
-    // ---------- Piano: original, classical in shape with a modern touch (F major, ~68 bpm) ----------
-    // Written for LUMIST; each period is generated from the progressions below, so it never loops exactly.
-    pianoBus = ctx.createGain(); pianoBus.gain.value = .2;
-    const warm = ctx.createBiquadFilter(); warm.type = 'lowpass'; warm.frequency.value = 5200; warm.Q.value = .3;
-    pianoBus.connect(warm); warm.connect(master);
-    const pianoSend = ctx.createGain(); pianoSend.gain.value = .9; warm.connect(pianoSend); pianoSend.connect(space);
-    const hz = m => 440 * Math.pow(2, (m - 69) / 12);
-    function note(t, m, vel) {
-      const f = hz(m), dur = Math.min(7, Math.max(2.2, 2.4 + (84 - m) * .09));
-      const env = ctx.createGain(), tone = ctx.createBiquadFilter();
-      tone.type = 'lowpass'; tone.Q.value = .5;
-      tone.frequency.setValueAtTime(Math.min(9000, f * (6 + vel * 8)), t);
-      tone.frequency.setTargetAtTime(Math.max(400, f * 2.2), t + .02, dur / 5);
-      env.gain.setValueAtTime(0, t);
-      env.gain.linearRampToValueAtTime(vel, t + .005);
-      env.gain.setTargetAtTime(vel * .45, t + .005, .09);
-      env.gain.setTargetAtTime(.0001, t + .2, dur / 4.2);
-      let out = env;
-      if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = Math.max(-.6, Math.min(.6, (m - 62) / 30)); env.connect(p); out = p; }
-      tone.connect(env); out.connect(pianoBus);
-      const parts = [1, .5, .26, .14, .08, .04];
-      parts.forEach((a, i) => {
-        const k = i + 1, fk = f * k * (1 + .00035 * k * k);
-        if (fk > 9000) return;
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = 'sine'; o.frequency.value = fk; g.gain.value = a / 2.2;
-        o.connect(g); g.connect(tone); o.start(t); o.stop(t + dur + .6);
-        if (k === 1) { // a second string, a hair out of tune, for warmth
-          const o2 = ctx.createOscillator(), g2 = ctx.createGain();
-          o2.type = 'sine'; o2.frequency.value = fk * 1.0009; g2.gain.value = a / 3.4;
-          o2.connect(g2); g2.connect(tone); o2.start(t); o2.stop(t + dur + .6);
-        }
-      });
-      // felt hammer
-      const n = ctx.createBufferSource(), nb = ctx.createBuffer(1, Math.floor(ctx.sampleRate * .03), ctx.sampleRate), d = nb.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3);
-      const nf = ctx.createBiquadFilter(), ng = ctx.createGain();
-      nf.type = 'bandpass'; nf.frequency.value = Math.min(6000, f * 3); nf.Q.value = 1.2; ng.gain.value = vel * .05;
-      n.buffer = nb; n.connect(nf); nf.connect(ng); ng.connect(pianoBus); n.start(t);
+    // ---------- Piano: a real grand, sampled (Salamander Grand Piano V3, CC BY 3.0) ----------
+    // Classical in shape, modern in colour, with a light Californio lilt in the left hand
+    // (a soft habanera sway, a nod to the Mexican ranchos that named Los Carneros). Original music.
+    pianoBus = ctx.createGain(); pianoBus.gain.value = .55;
+    const warm = ctx.createBiquadFilter(); warm.type = 'lowshelf'; warm.frequency.value = 220; warm.gain.value = 2;
+    const air = ctx.createBiquadFilter(); air.type = 'highshelf'; air.frequency.value = 5000; air.gain.value = -4;
+    pianoBus.connect(warm); warm.connect(air); air.connect(master);
+    const room = ctx.createGain(); room.gain.value = .55; air.connect(room); room.connect(space);
+    const SAMPLE_NOTES = [36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87, 90];
+    const samples = { 4: {}, 8: {} };
+    let samplesReady = null;
+    function loadSamples() {
+      if (samplesReady) return samplesReady;
+      const jobs = [];
+      for (const layer of [4, 8]) for (const m of SAMPLE_NOTES) {
+        jobs.push(fetch(PIANO_BASE + m + '-v' + layer + '.mp3').then(r => r.arrayBuffer())
+          .then(b => new Promise((res, rej) => ctx.decodeAudioData(b, res, rej)))
+          .then(buf => { samples[layer][m] = buf; }).catch(() => {}));
+      }
+      samplesReady = Promise.all(jobs);
+      return samplesReady;
     }
-    // Classical shape, modern colour: 8-bar periods (question then answer) with
-    // broken-chord / Alberti accompaniment, a singing right-hand line, real cadences,
-    // and occasional added 9ths, suspensions and quiet held bars. Original material.
+    function voice(t, m, vel, layer, gain, release) {
+      const near = SAMPLE_NOTES.reduce((a, x) => Math.abs(x - m) < Math.abs(a - m) ? x : a, SAMPLE_NOTES[0]);
+      const buf = samples[layer][near]; if (!buf) return;
+      const src = ctx.createBufferSource(), g = ctx.createGain();
+      src.buffer = buf; src.playbackRate.value = Math.pow(2, (m - near) / 12);
+      g.gain.setValueAtTime(gain, t);
+      g.gain.setValueAtTime(gain, release);
+      g.gain.setTargetAtTime(.0001, release, .28);          // the damper comes down
+      let out = g;
+      if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = Math.max(-.45, Math.min(.45, (m - 62) / 36)); g.connect(p); out = p; }
+      src.connect(g); out.connect(pianoBus); src.start(t); src.stop(release + 1.6);
+    }
+    // vel 0..1: blend the soft and medium recordings, like a real touch
+    function note(t, m, vel, hold) {
+      const release = t + Math.max(.25, hold || 1.5);
+      const mix = Math.max(0, Math.min(1, (vel - .25) / .5));
+      const level = .35 + vel * .65;
+      if (mix < .98) voice(t, m, vel, 4, level * (1 - mix), release);
+      if (mix > .02) voice(t, m, vel, 8, level * mix * .8, release);
+    }
     const KEY = 53;                                   // F3
     const MAJ = [0, 2, 4, 5, 7, 9, 11];
     const deg = (d, oct = 0) => KEY + 12 * (oct + Math.floor(d / 7)) + MAJ[((d % 7) + 7) % 7];
-    // chord = scale degree of root; quality comes from the key. color: extra degree (6 = 7th, 8 = 9th)
     const PERIODS = [
       [[0], [5], [3], [4, 'half'], [0], [3], [4, 'sus'], [0, 'end']],
       [[5], [3], [0], [4, 'half'], [1, 7], [4, 7], [0, 'add9'], [0, 'end']],
       [[0, 7], [2], [3], [0], [1, 7], [4, 'sus'], [5], [0, 'end']],
-      [[0], [4], [5], [2], [3], [0], [1, 7], [0, 'end']],          // a slow descending-bass walk
+      [[0], [4], [5], [2], [3], [0], [1, 7], [0, 'end']],
       [[3, 'add9'], [0], [1, 7], [4, 'half'], [3], [0], [4, 'sus'], [0, 'end']],
     ];
     function chordTones(root, kind) {
       const t = [root, root + 2, root + 4];
       if (kind === 7) t.push(root + 6);
-      if (kind === 'add9' || kind === 'end' && Math.random() < .5) t.push(root + 8);
+      if (kind === 'add9' || (kind === 'end' && Math.random() < .5)) t.push(root + 8);
       return t;
     }
-    let prevDeg = 9;                                  // melody memory, in scale degrees above KEY
+    let prevDeg = 9;
     function phrase() {
       if (!on) return;
-      const beat = 60 / (64 + Math.random() * 8), eighth = beat / 2;
+      if (!samples[4][60]) { pianoTimer = setTimeout(phrase, 1500); return; }   // still loading
+      const tempo = 64 + Math.random() * 8;
+      let t = ctx.currentTime + .25;
       const period = PERIODS[Math.floor(Math.random() * PERIODS.length)];
-      let t = ctx.currentTime + .2;
-      const human = () => (Math.random() - .5) * .025;
-      const alberti = Math.random() < .55;
+      const style = Math.random() < .45 ? 'lilt' : Math.random() < .55 ? 'alberti' : 'roll';
+      const human = () => (Math.random() - .5) * .03;
       period.forEach(([root, kind], bar) => {
+        // rubato: breathe a little at the start and at cadences
+        const local = tempo * (bar === 0 ? .94 : kind === 'end' ? .86 : kind === 'half' ? .93 : 1 + (Math.random() - .5) * .04);
+        const beat = 60 / local, eighth = beat / 2, barLen = beat * 4;
         const tones = chordTones(root, kind);
-        const sparse = !kind && Math.random() < .14;   // a modern held bar: let it breathe
+        const sparse = !kind && Math.random() < .14;
+        const pedal = t + barLen * (kind === 'end' ? 2.2 : 1) - .05;   // change pedal with the harmony
         // ---- left hand ----
-        const bass = deg(root, -1) - (deg(root, -1) > 50 ? 12 : 0);
-        const fifth = bass + 7, third = deg(root + 2, -1) + (deg(root + 2, -1) < bass ? 12 : 0);
-        const top = third + (fifth - bass > 0 ? 5 : 0);
-        const lv = .07 + Math.random() * .015;
+        let bass = deg(root, -1); if (bass > 50) bass -= 12;
+        const fifth = bass + 7; let third = deg(root + 2, -1); if (third < bass) third += 12;
+        const lv = .2 + Math.random() * .05;
         if (sparse || kind === 'end') {
-          note(t + human(), bass, lv * 1.2); note(t + .06 + human(), fifth, lv); note(t + .12 + human(), third + 12, lv * .9);
-        } else if (alberti) {
+          [bass, fifth, third + 12].forEach((m, i) => note(t + i * .07 + human(), m, lv * (1.1 - i * .12), pedal - t));
+        } else if (style === 'lilt') {
+          // habanera sway: bass on 1, chord on the "and-a", chord on 2, fifth on 3, chord on 4
+          const hab = [[0, bass, 1.15], [beat * .75, third + 12, .8], [beat, fifth + 12, .85], [beat * 2, fifth, 1], [beat * 2.75, third + 12, .75], [beat * 3, fifth + 12, .8]];
+          hab.forEach(([o, m, k]) => note(t + o + human(), m, lv * k, pedal - t - o));
+        } else if (style === 'alberti') {
           const pat = [bass, fifth, third + 12, fifth];
-          for (let i = 0; i < 8; i++) note(t + i * eighth + human(), i === 0 ? bass : pat[i % 4] + (i % 4 ? 0 : 12), i === 0 ? lv * 1.25 : lv * (i % 2 ? .78 : .9));
+          for (let i = 0; i < 8; i++) note(t + i * eighth + human(), i === 0 ? bass : pat[i % 4] + (i % 4 ? 0 : 12), lv * (i === 0 ? 1.15 : i % 2 ? .72 : .82), pedal - t - i * eighth);
         } else {
           const up = [bass, fifth, third + 12, fifth + 12, third + 12, fifth];
-          for (let i = 0; i < 6; i++) note(t + i * (beat * 4 / 6) + human(), up[i], i === 0 ? lv * 1.25 : lv * .82);
+          for (let i = 0; i < 6; i++) note(t + i * (barLen / 6) + human(), up[i], lv * (i === 0 ? 1.15 : .78), pedal - t - i * (barLen / 6));
         }
         // ---- right hand ----
         const cadence = kind === 'half' || kind === 'end';
         const target = kind === 'end' ? 7 : kind === 'half' ? (Math.random() < .5 ? 8 : 6) : null;
-        const beats = sparse ? [0] : cadence ? [0, 1, 2] : [0, 1, 2, 3];
+        let beats = sparse ? [0] : cadence ? [0, 1, 2] : [0, 1, 2, 3];
+        // a little syncopation in lilt bars: push beat 3 forward by an eighth
+        if (style === 'lilt' && !cadence && !sparse && Math.random() < .5) beats = [0, 1, 1.5, 3];
         beats.forEach((bt, i) => {
-          const strong = bt === 0 || bt === 2;
+          const strong = bt === 0 || bt === 2 || bt === 1.5;
           let d;
           if (cadence && i === beats.length - 1) d = target;
-          else if (strong) {                          // a chord tone near the last note
+          else if (strong) {
             const opts = tones.flatMap(x => [x + 7, x + 14]).filter(x => x >= 7 && x <= 16);
             d = opts.reduce((a, x) => Math.abs(x - prevDeg) < Math.abs(a - prevDeg) ? x : a, opts[0]);
-            if (Math.abs(d - prevDeg) === 0 && Math.random() < .5) d += Math.random() < .5 ? 1 : -1;
-          } else d = prevDeg + (Math.random() < .5 ? 1 : -1) * (Math.random() < .8 ? 1 : 2);   // passing / neighbour
+            if (d === prevDeg && Math.random() < .5) d += Math.random() < .5 ? 1 : -1;
+          } else d = prevDeg + (Math.random() < .5 ? 1 : -1) * (Math.random() < .8 ? 1 : 2);
           d = Math.max(7, Math.min(16, d));
           const m = deg(d, 0);
-          const at = t + bt * beat + human();
-          const dur8 = !strong && !cadence && Math.random() < .3;   // two eighths now and then
-          const v = (strong ? .13 : .1) + Math.random() * .025;
-          if (strong && !cadence && Math.random() < .12) note(at - .09, deg(d + 1, 0), v * .55);   // appoggiatura
-          if (kind === 'sus' && bt === 2) { note(at, deg(d + 1, 0), v); note(at + beat * .9, m, v * .85); }
-          else note(at, m, v);
-          if (dur8) { const d2 = d + (Math.random() < .5 ? 1 : -1); note(at + eighth, deg(Math.max(7, Math.min(16, d2)), 0), v * .85); prevDeg = d2; }
-          else prevDeg = d;
+          const at = t + bt * beat + human() + (bt === 0 ? .012 : 0);      // melody leans slightly late, like a singer
+          const next = beats[i + 1] !== undefined ? beats[i + 1] * beat : barLen;
+          const hold = Math.max(next - bt * beat, beat * .9) + .15;
+          const v = (strong ? .42 : .32) + Math.random() * .08 + (cadence && i === beats.length - 1 ? -.06 : 0);
+          if (strong && !cadence && Math.random() < .1) note(at - .08, deg(d + 1, 0), v * .6, .12);   // grace note
+          if (kind === 'sus' && bt === 2) { note(at, deg(d + 1, 0), v, beat * .9); note(at + beat * .9, m, v * .85, hold); }
+          else note(at, m, v, cadence && i === beats.length - 1 ? pedal - at : hold);
+          prevDeg = d;
         });
-        t += beat * 4 * (kind === 'end' ? 1.35 : kind === 'half' ? 1.08 : 1);   // a little ritardando at cadences
+        t += barLen;
       });
       pianoTimer = setTimeout(phrase, (t - ctx.currentTime + 5 + Math.random() * 6) * 1000);
     }
-    pianoFn = phrase;
+    pianoFn = phrase; loadSamplesFn = loadSamples;
   }
 
   // Scrolling stirs the air a little, like the page's bubbles.
@@ -308,7 +327,7 @@
     master.gain.cancelScheduledValues(ctx.currentTime);
     master.gain.setTargetAtTime(.55, ctx.currentTime, .9);
     clearTimeout(birdTimer); if (birdFn) birdTimer = setTimeout(birdFn, 2500);
-    clearTimeout(pianoTimer); if (pianoFn) pianoTimer = setTimeout(pianoFn, 3500);
+    clearTimeout(pianoTimer); if (pianoFn) { loadSamplesFn && loadSamplesFn(); pianoTimer = setTimeout(pianoFn, 3500); }
     try { localStorage.setItem(KEY, 'on'); } catch (e) {}
   }
   function stop(remember = true) {

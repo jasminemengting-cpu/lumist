@@ -1,0 +1,6 @@
+Piano samples: Salamander Grand Piano V3 by Alexander Holm
+https://archive.org/details/SalamanderGrandPianoV3
+Licensed under Creative Commons Attribution 3.0 (CC BY 3.0)
+http://creativecommons.org/licenses/by/3.0/
+MP3 encodings from the @audio-samples/piano-mp3-velocity4 and -velocity8 npm packages.
+Files renamed to <midi>-v<layer>.mp3; no other changes.
