@@ -115,9 +115,6 @@
       sphere(x, y, radius, (.3 + bubble.depth * .55) * fade);
       ctx.restore();
     }
-    // A larger foreground bubble keeps the original close-up detail, with an open reflective rim.
-    sphere(mid + half * .19 + Math.sin(clock * .35) * 1.4, height * .61 - Math.sin(clock * .18) * 3,
-      Math.min(width, height) * .027, .82);
     ctx.restore();
     if (bottleArt.complete && bottleArt.naturalWidth) {
       const artHeight = height, artWidth = artHeight * bottleArt.naturalWidth / bottleArt.naturalHeight;
