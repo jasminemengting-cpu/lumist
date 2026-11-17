@@ -29,6 +29,17 @@
   let airWidth = 0, airHeight = 0, ambient = [];
   let width = 0, height = 0, frame = 0, previous = 0, clock = 0;
   let visible = false, paused = motion.matches;
+  // Scrolling stirs the wine: bubbles speed up, wobble and drift, then settle.
+  let stir = 0, lift = 0, drift = 0, lastScrollY = scrollY, lastScrollT = performance.now();
+  addEventListener('scroll', () => {
+    const now = performance.now();
+    const dy = scrollY - lastScrollY, dt = Math.max(16, now - lastScrollT);
+    lastScrollY = scrollY; lastScrollT = now;
+    if (paused) return;
+    const speed = Math.abs(dy) / dt; // px per ms
+    stir = Math.min(3, stir + speed * .85);
+    drift += Math.sign(dy) * Math.min(1, speed) * .6;
+  }, { passive: true });
   const bottleArt = new Image();
   bottleArt.addEventListener('load', () => draw());
   bottleArt.src = canvas.getAttribute('data-bottle-art') || '';
@@ -43,9 +54,10 @@
     if (!airCtx) return;
     airCtx.clearRect(0, 0, airWidth, airHeight);
     for (const bubble of ambient) {
-      const progress = (bubble.phase + clock * bubble.rate) % 1;
+      const progress = (bubble.phase + (clock + lift) * bubble.rate) % 1;
       const y = airHeight + 24 - progress * (airHeight + 48);
-      const x = bubble.x * airWidth + Math.sin(clock * .22 + bubble.sway) * (2 + bubble.radius * .3);
+      const swirl = Math.sin(clock * 2.1 + bubble.sway + y * .011) * stir * (5 + bubble.radius * .9);
+      const x = bubble.x * airWidth + Math.sin(clock * .22 + bubble.sway) * (2 + bubble.radius * .3) + swirl + drift * (4 + bubble.radius * .5) * Math.sin(bubble.sway);
       const radius = bubble.radius * (.86 + progress * .14);
       const fade = Math.min(1, progress * 12, (1 - progress) * 12);
       const alpha = bubble.alpha * fade;
@@ -104,10 +116,11 @@
     liquid.addColorStop(1, 'rgba(211,208,189,.018)');
     ctx.fillStyle = liquid; ctx.fillRect(0, height * .185, width, bottom);
     for (const bubble of bubbles) {
-      const progress = (bubble.phase + clock * bubble.rate) % 1;
-      const lift = progress * progress * .18 + progress * .82;
-      const y = bottom - lift * (bottom - height * .19);
-      const x = width * bubble.lane + Math.sin(progress * 8 + bubble.sway) * (2 + progress * 5);
+      const progress = (bubble.phase + (clock + lift * 1.4) * bubble.rate) % 1;
+      const rise = progress * progress * .18 + progress * .82;
+      const y = bottom - rise * (bottom - height * .19);
+      const x = width * bubble.lane + Math.sin(progress * 8 + bubble.sway) * (2 + progress * 5)
+        + Math.sin(clock * 3 + bubble.sway + progress * 11) * stir * (1.5 + progress * 3.5);
       const radius = bubble.radius * (.65 + progress * 1.05) * Math.min(width / 420, 1.35);
       const fade = Math.min(1, progress * 12, (1 - progress) * 9);
       ctx.save();
@@ -130,7 +143,14 @@
   function tick(now) {
     frame = 0;
     if (paused || (!visible && !airCtx) || document.hidden) { previous = 0; return; }
-    if (previous) clock += Math.min((now - previous) / 1000, .05);
+    if (previous) {
+      const dt = Math.min((now - previous) / 1000, .05);
+      clock += dt;
+      lift += dt * stir * 1.8;          // extra rise while stirred
+      stir *= Math.pow(.12, dt);        // settles in about a second
+      drift *= Math.pow(.2, dt);
+      if (stir < .002) stir = 0;
+    }
     previous = now; drawAir(); if (visible) draw(); frame = requestAnimationFrame(tick);
   }
   function sync() {
