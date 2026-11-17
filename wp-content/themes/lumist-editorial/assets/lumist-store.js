@@ -237,7 +237,7 @@
     if (!n) { root.innerHTML = `<div class="ls-page">${steps(3)}<p class="ls-empty">Your bag is empty.</p><a class="ls-btn ghost" style="max-width:320px" href="${link('journal/')}">Discover a wine</a></div>`; return; }
     if (!m) {
       root.innerHTML = `<div class="ls-page">${steps(2)}<div class="ls-grid"><div><h2 style="font:400 30px 'IM Fell English',Georgia,serif;margin:0 0 8px">Sign in to check out</h2><p class="ls-small">Checkout is for LUMIST members. Sign in, or create an account in a minute.</p>${memberForms(true)}</div>
-        <aside class="ls-box"><h2>Your bag</h2>${itemsHTML(false)}${subtotal()}<a class="ls-btn ghost" href="${link('cart/')}">Edit bag</a></aside></div></div>`;
+        <aside class="ls-box"><h2>My bag</h2>${itemsHTML(false)}${subtotal()}<a class="ls-btn ghost" href="${link('cart/')}">Edit bag</a></aside></div></div>`;
       wireMember(() => renderCheckout());
       return;
     }
@@ -307,7 +307,7 @@
   // If an older copy of the cart page is served without the bag container, add it.
   if (/\/cart\/?$/.test(location.pathname) && !document.getElementById('lumist-cart-page')) {
     const main = document.querySelector('main');
-    if (main) main.innerHTML = '<h1>Your bag</h1><div class="page-body"><div id="lumist-cart-page"></div></div>';
+    if (main) main.innerHTML = '<h1>My bag</h1><div class="page-body"><div id="lumist-cart-page"></div></div>';
   }
 
   render(); renderMemberPage();
