@@ -74,7 +74,10 @@
   .ls-btn[disabled]{opacity:.45;cursor:not-allowed}
   .ls-empty{font-style:italic;color:#555}
   .ls-fine{font:italic 13px/1.45 "EB Garamond",Georgia,serif;color:#777;margin:10px 0 0}
-  .ls-page{max-width:980px;margin:0 auto}
+  .ls-page{max-width:1180px;margin:0 auto}
+  main:has(#lumist-cart-page) .page-body,main:has(#lumist-checkout) .page-body,main:has(#lumist-member-page) .page-body{max-width:none;margin:0}
+  main:has(#lumist-cart-page)>h1,main:has(#lumist-checkout)>h1{max-width:1180px;margin-left:auto;margin-right:auto}
+  .ls-grid{grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr)}
   .ls-steps{display:flex;gap:10px;align-items:center;font:400 15px "IM Fell English SC","IM Fell English",Georgia,serif;letter-spacing:.06em;color:#888;margin:0 0 24px}
   .ls-steps b{color:#212121;font-weight:400;border-bottom:1px solid #212121}
   .ls-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:start}
