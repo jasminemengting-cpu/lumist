@@ -171,9 +171,9 @@
     }
     birdFn = bird;
 
-    // ---------- Piano: an original, slow, sparse theme (F major, about 62 bpm) ----------
-    // Written for LUMIST; phrases are generated from the chords below, so it never loops exactly.
-    pianoBus = ctx.createGain(); pianoBus.gain.value = .34;
+    // ---------- Piano: original, classical in shape with a modern touch (F major, ~68 bpm) ----------
+    // Written for LUMIST; each period is generated from the progressions below, so it never loops exactly.
+    pianoBus = ctx.createGain(); pianoBus.gain.value = .2;
     const warm = ctx.createBiquadFilter(); warm.type = 'lowpass'; warm.frequency.value = 5200; warm.Q.value = .3;
     pianoBus.connect(warm); warm.connect(master);
     const pianoSend = ctx.createGain(); pianoSend.gain.value = .9; warm.connect(pianoSend); pianoSend.connect(space);
@@ -211,42 +211,78 @@
       nf.type = 'bandpass'; nf.frequency.value = Math.min(6000, f * 3); nf.Q.value = 1.2; ng.gain.value = vel * .05;
       n.buffer = nb; n.connect(nf); nf.connect(ng); ng.connect(pianoBus); n.start(t);
     }
-    // Chords as MIDI notes: left hand (low) and the tones the right hand may use.
-    const CH = {
-      F:  { lh: [41, 48, 52, 57], rh: [65, 69, 72, 76, 77] },          // Fmaj7
-      Am: { lh: [45, 52, 55, 60], rh: [64, 67, 69, 72, 76] },          // Am7
-      Dm: { lh: [38, 45, 53, 60, 64], rh: [62, 65, 69, 72, 74, 76] },  // Dm9
-      Bb: { lh: [46, 53, 57, 62], rh: [65, 69, 70, 72, 74, 77] },      // Bbmaj7(add 9)
-      C:  { lh: [48, 55, 62, 64], rh: [64, 67, 69, 72, 74, 79] },      // C6/9
-      Gm: { lh: [43, 50, 53, 58], rh: [62, 65, 67, 70, 74] },          // Gm7
-    };
-    const ROUTES = [['F', 'Am', 'Dm', 'Bb'], ['Dm', 'Bb', 'F', 'C'], ['Bb', 'F', 'Gm', 'C'], ['F', 'C', 'Dm', 'Bb'], ['Am', 'Dm', 'Bb', 'C']];
-    const SCALE = [60, 62, 64, 65, 67, 69, 70, 72, 74, 76, 77, 79, 81];
-    let prev = 72;
+    // Classical shape, modern colour: 8-bar periods (question then answer) with
+    // broken-chord / Alberti accompaniment, a singing right-hand line, real cadences,
+    // and occasional added 9ths, suspensions and quiet held bars. Original material.
+    const KEY = 53;                                   // F3
+    const MAJ = [0, 2, 4, 5, 7, 9, 11];
+    const deg = (d, oct = 0) => KEY + 12 * (oct + Math.floor(d / 7)) + MAJ[((d % 7) + 7) % 7];
+    // chord = scale degree of root; quality comes from the key. color: extra degree (6 = 7th, 8 = 9th)
+    const PERIODS = [
+      [[0], [5], [3], [4, 'half'], [0], [3], [4, 'sus'], [0, 'end']],
+      [[5], [3], [0], [4, 'half'], [1, 7], [4, 7], [0, 'add9'], [0, 'end']],
+      [[0, 7], [2], [3], [0], [1, 7], [4, 'sus'], [5], [0, 'end']],
+      [[0], [4], [5], [2], [3], [0], [1, 7], [0, 'end']],          // a slow descending-bass walk
+      [[3, 'add9'], [0], [1, 7], [4, 'half'], [3], [0], [4, 'sus'], [0, 'end']],
+    ];
+    function chordTones(root, kind) {
+      const t = [root, root + 2, root + 4];
+      if (kind === 7) t.push(root + 6);
+      if (kind === 'add9' || kind === 'end' && Math.random() < .5) t.push(root + 8);
+      return t;
+    }
+    let prevDeg = 9;                                  // melody memory, in scale degrees above KEY
     function phrase() {
       if (!on) return;
-      const beat = 60 / (58 + Math.random() * 8);
-      const route = ROUTES[Math.floor(Math.random() * ROUTES.length)];
-      let t = ctx.currentTime + .15;
-      const human = () => (Math.random() - .5) * .04;
-      route.forEach((name, bar) => {
-        const c = CH[name], last = bar === route.length - 1;
-        // left hand: a slow roll up from the bass
-        c.lh.forEach((m, i) => note(t + i * (.07 + Math.random() * .04) + human(), m, .16 + Math.random() * .05 - i * .012));
-        if (Math.random() < .5) note(t + beat * 2 + human(), c.lh[0] + 12, .09);
-        // right hand: a few notes, mostly stepwise, with room around them
-        const slots = last ? [0, 1, 2] : [0, 1, 1.5, 2, 3, 3.5].filter(() => Math.random() < .42);
-        slots.forEach((b, i) => {
-          const pool = (Math.random() < .7 ? c.rh : SCALE).filter(m => Math.abs(m - prev) <= 5);
-          let m = pool.length ? pool[Math.floor(Math.random() * pool.length)] : c.rh[Math.floor(Math.random() * c.rh.length)];
-          if (last && i === slots.length - 1) m = c.rh.reduce((a, x) => Math.abs(x - prev) < Math.abs(a - prev) ? x : a, c.rh[0]);
-          prev = m;
-          note(t + b * beat + .02 + human(), m, .2 + Math.random() * .08);
+      const beat = 60 / (64 + Math.random() * 8), eighth = beat / 2;
+      const period = PERIODS[Math.floor(Math.random() * PERIODS.length)];
+      let t = ctx.currentTime + .2;
+      const human = () => (Math.random() - .5) * .025;
+      const alberti = Math.random() < .55;
+      period.forEach(([root, kind], bar) => {
+        const tones = chordTones(root, kind);
+        const sparse = !kind && Math.random() < .14;   // a modern held bar: let it breathe
+        // ---- left hand ----
+        const bass = deg(root, -1) - (deg(root, -1) > 50 ? 12 : 0);
+        const fifth = bass + 7, third = deg(root + 2, -1) + (deg(root + 2, -1) < bass ? 12 : 0);
+        const top = third + (fifth - bass > 0 ? 5 : 0);
+        const lv = .07 + Math.random() * .015;
+        if (sparse || kind === 'end') {
+          note(t + human(), bass, lv * 1.2); note(t + .06 + human(), fifth, lv); note(t + .12 + human(), third + 12, lv * .9);
+        } else if (alberti) {
+          const pat = [bass, fifth, third + 12, fifth];
+          for (let i = 0; i < 8; i++) note(t + i * eighth + human(), i === 0 ? bass : pat[i % 4] + (i % 4 ? 0 : 12), i === 0 ? lv * 1.25 : lv * (i % 2 ? .78 : .9));
+        } else {
+          const up = [bass, fifth, third + 12, fifth + 12, third + 12, fifth];
+          for (let i = 0; i < 6; i++) note(t + i * (beat * 4 / 6) + human(), up[i], i === 0 ? lv * 1.25 : lv * .82);
+        }
+        // ---- right hand ----
+        const cadence = kind === 'half' || kind === 'end';
+        const target = kind === 'end' ? 7 : kind === 'half' ? (Math.random() < .5 ? 8 : 6) : null;
+        const beats = sparse ? [0] : cadence ? [0, 1, 2] : [0, 1, 2, 3];
+        beats.forEach((bt, i) => {
+          const strong = bt === 0 || bt === 2;
+          let d;
+          if (cadence && i === beats.length - 1) d = target;
+          else if (strong) {                          // a chord tone near the last note
+            const opts = tones.flatMap(x => [x + 7, x + 14]).filter(x => x >= 7 && x <= 16);
+            d = opts.reduce((a, x) => Math.abs(x - prevDeg) < Math.abs(a - prevDeg) ? x : a, opts[0]);
+            if (Math.abs(d - prevDeg) === 0 && Math.random() < .5) d += Math.random() < .5 ? 1 : -1;
+          } else d = prevDeg + (Math.random() < .5 ? 1 : -1) * (Math.random() < .8 ? 1 : 2);   // passing / neighbour
+          d = Math.max(7, Math.min(16, d));
+          const m = deg(d, 0);
+          const at = t + bt * beat + human();
+          const dur8 = !strong && !cadence && Math.random() < .3;   // two eighths now and then
+          const v = (strong ? .13 : .1) + Math.random() * .025;
+          if (strong && !cadence && Math.random() < .12) note(at - .09, deg(d + 1, 0), v * .55);   // appoggiatura
+          if (kind === 'sus' && bt === 2) { note(at, deg(d + 1, 0), v); note(at + beat * .9, m, v * .85); }
+          else note(at, m, v);
+          if (dur8) { const d2 = d + (Math.random() < .5 ? 1 : -1); note(at + eighth, deg(Math.max(7, Math.min(16, d2)), 0), v * .85); prevDeg = d2; }
+          else prevDeg = d;
         });
-        t += beat * 4;
+        t += beat * 4 * (kind === 'end' ? 1.35 : kind === 'half' ? 1.08 : 1);   // a little ritardando at cadences
       });
-      // let the last chord ring, then a long rest before the next thought
-      pianoTimer = setTimeout(phrase, (t - ctx.currentTime + 4 + Math.random() * 7) * 1000);
+      pianoTimer = setTimeout(phrase, (t - ctx.currentTime + 5 + Math.random() * 6) * 1000);
     }
     pianoFn = phrase;
   }
