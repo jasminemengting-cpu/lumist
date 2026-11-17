@@ -132,6 +132,18 @@
       paperBubble(airCtx, x, y, radius, alpha * hide);
     }
   }
+  // Inside edge of the pencil-drawn glass, measured from the artwork:
+  // [height fraction, half-width as a fraction of height]. Bubbles never leave it.
+  const INNER = [[.255,.014],[.28,.024],[.31,.03],[.34,.035],[.37,.045],[.40,.055],[.43,.063],[.46,.072],[.49,.1],[.52,.106],[.55,.11],[.88,.11],[.895,.1]];
+  const SURFACE = .262, FLOOR_Y = .885;
+  function innerHalf(f) {
+    if (f <= INNER[0][0]) return INNER[0][1];
+    for (let i = 1; i < INNER.length; i++) {
+      const [f1, w1] = INNER[i], [f0, w0] = INNER[i - 1];
+      if (f <= f1) return w0 + (w1 - w0) * (f - f0) / (f1 - f0);
+    }
+    return INNER[INNER.length - 1][1];
+  }
   function sphere(x, y, radius, alpha) {
     const light = ctx.createRadialGradient(x - radius * .28, y - radius * .36, 0, x, y, radius);
     light.addColorStop(0, `rgba(235,234,226,${alpha * .07})`);
@@ -156,6 +168,10 @@
     // A full bottle, with curved shoulders, a weighted base and cylindrical glass reflections.
     const mid = width * .5, half = Math.min(width * .245, height * .137);
     const neck = half * .32, top = height * .075, shoulder = height * .52, bottom = height * .965;
+    const inside = new Path2D();
+    INNER.forEach(([f, w], i) => i ? inside.lineTo(mid - w * height, f * height) : inside.moveTo(mid - w * height, f * height));
+    for (let i = INNER.length - 1; i >= 0; i--) inside.lineTo(mid + INNER[i][1] * height, INNER[i][0] * height);
+    inside.closePath();
     const bottle = new Path2D();
     bottle.moveTo(mid - neck, top); bottle.lineTo(mid - neck, height * .21);
     bottle.bezierCurveTo(mid - neck, height * .36, mid - half, height * .43, mid - half, shoulder);
@@ -166,20 +182,23 @@
     bottle.lineTo(mid + half, shoulder);
     bottle.bezierCurveTo(mid + half, height * .43, mid + neck, height * .36, mid + neck, height * .21);
     bottle.lineTo(mid + neck, top); bottle.closePath();
-    ctx.save(); ctx.clip(bottle);
+    ctx.save(); ctx.clip(inside);
     // Leave the body open: the pencil image supplies the glass texture and contours.
     const liquid = ctx.createLinearGradient(0, height * .2, 0, bottom);
     liquid.addColorStop(0, 'rgba(211,208,189,.012)');
     liquid.addColorStop(.65, 'rgba(211,208,189,.055)');
     liquid.addColorStop(1, 'rgba(211,208,189,.018)');
     ctx.fillStyle = liquid; ctx.fillRect(0, height * .185, width, bottom);
-    for (const bubble of (bubblesOff ? [] : bubbles)) {
+    for (const bubble of bubbles) {   // the bottle's own bubbles never stop
       const progress = (bubble.phase + (clock + lift * 1.4) * bubble.rate) % 1;
       const rise = progress * progress * .18 + progress * .82;
-      const y = bottom - rise * (bottom - height * .19);
-      const x = width * bubble.lane + Math.sin(progress * 8 + bubble.sway) * (2 + progress * 5)
-        + Math.sin(clock * 3 + bubble.sway + progress * 11) * stir * (1.5 + progress * 3.5);
+      const y = height * (FLOOR_Y - rise * (FLOOR_Y - SURFACE));
       const radius = bubble.radius * (.65 + progress * 1.05) * Math.min(width / 420, 1.35);
+      const room = Math.max(0, innerHalf(y / height) * height - radius - 1.5);
+      const lane = (bubble.lane - .5) * height * .55;
+      let x = lane + Math.sin(progress * 8 + bubble.sway) * (2 + progress * 5)
+        + Math.sin(clock * 3 + bubble.sway + progress * 11) * stir * (1.5 + progress * 3.5);
+      x = mid + Math.max(-room, Math.min(room, x));
       const fade = Math.min(1, progress * 12, (1 - progress) * 9);
       ctx.save();
       if (bubble.depth < .17) ctx.filter = 'blur(1px)';
@@ -201,7 +220,7 @@
   function tick(now) {
     frame = 0;
     if (!canvas.isConnected) return;     // the page was swapped: stop this loop
-    if (paused || bubblesOff || (!visible && !airCtx) || document.hidden) { previous = 0; return; }
+    if (paused || (!visible && (bubblesOff || !airCtx)) || document.hidden) { previous = 0; return; }
     if (previous) {
       const dt = Math.min((now - previous) / 1000, .05);
       clock += dt;
@@ -210,7 +229,7 @@
       drift *= Math.pow(.2, dt);
       if (stir < .002) stir = 0;
     }
-    previous = now; drawAir(); if (visible) draw(); frame = requestAnimationFrame(tick);
+    previous = now; if (!bubblesOff) drawAir(); if (visible) draw(); frame = requestAnimationFrame(tick);
   }
   function sync() {
     cancelAnimationFrame(frame); frame = 0; previous = 0;
@@ -218,7 +237,7 @@
     [button, ambientButton].forEach(b => { if (!b) return; b.textContent = label; b.setAttribute('aria-pressed', String(bubblesOff)); });
     if (air) { air.style.transition = 'opacity .5s ease'; air.style.opacity = bubblesOff ? '0' : '1'; }
     drawAir(); draw();
-    if (!paused && !bubblesOff && (visible || airCtx) && !document.hidden) frame = requestAnimationFrame(tick);
+    if (!paused && (visible || (airCtx && !bubblesOff)) && !document.hidden) frame = requestAnimationFrame(tick);
   }
   function resize() {
     const box = canvas.getBoundingClientRect();
