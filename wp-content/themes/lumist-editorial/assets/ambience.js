@@ -38,7 +38,7 @@
   .lumist-ambience-credit a{color:inherit}
   .lumist-ambience[aria-pressed="true"] + .lumist-ambience-credit{display:block}
   @media print{.lumist-ambience,.lumist-ambience-credit{display:none}}`;
-  const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
+  const style = document.createElement('style'); style.textContent = css; style.dataset.lumistKeep = ''; document.head.appendChild(style);
 
   const btn = document.createElement('button');
   btn.type = 'button'; btn.className = 'lumist-ambience'; btn.setAttribute('aria-pressed', 'false');
@@ -339,6 +339,90 @@
     if (remember) { try { localStorage.setItem(KEY, 'off'); } catch (e) {} }
   }
   btn.addEventListener('click', () => (on ? stop() : start()));
+
+
+  // ---------- Keep the sound going between pages ----------
+  // While the sound is on, links inside the site swap the page in place instead of
+  // reloading it, so the audio never stops. The address bar, Back and Forward work as usual.
+  const SITE = ME ? new URL('../../../../', ME).href : location.origin + '/';
+  const RERUN = /(site|commerce|estate-experience|lumist-store)\.js(\?|$)/;
+  let swapped = false, busy = false;
+  function internal(u) {
+    return u.origin === location.origin && u.href.startsWith(SITE)
+      && !/\.(png|jpe?g|webp|gif|svg|mp3|pdf|zip|css|js|txt|json)$/i.test(u.pathname)
+      && !/\/(backup|archive|wp-admin|wp-content)\//.test(u.pathname);
+  }
+  function loadCss(href) {
+    return new Promise(res => {
+      const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href;
+      const done = () => res(l); l.onload = done; l.onerror = done; setTimeout(done, 2000);
+      document.head.appendChild(l);
+    });
+  }
+  function runScript(src) {
+    return new Promise(res => { const sc = document.createElement('script'); sc.src = src; sc.onload = sc.onerror = () => res(); document.body.appendChild(sc); });
+  }
+  async function go(url, push) {
+    if (busy) return; busy = true;
+    try {
+      const r = await fetch(url.href, { credentials: 'same-origin' });
+      if (!r.ok || !(r.headers.get('content-type') || '').includes('text/html')) throw new Error('not html');
+      const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+      const base = new URL(url.href);
+      const abs = h => new URL(h, base).href;
+      // stylesheets: add the new page's first, then drop what it doesn't use
+      const keep = el => el.hasAttribute('data-lumist-keep');
+      const curLinks = [...document.head.querySelectorAll('link[rel="stylesheet"]')].filter(l => !keep(l));
+      const newHrefs = [...doc.head.querySelectorAll('link[rel="stylesheet"]')].map(l => abs(l.getAttribute('href')));
+      const have = new Set(curLinks.map(l => l.href));
+      await Promise.all(newHrefs.filter(h => !have.has(h)).map(loadCss));
+      curLinks.filter(l => !newHrefs.includes(l.href)).forEach(l => l.remove());
+      document.head.querySelectorAll('style').forEach(el => { if (!keep(el)) el.remove(); });
+      doc.head.querySelectorAll('style').forEach(el => document.head.appendChild(el.cloneNode(true)));
+      document.title = doc.title;
+      // body: everything except the sound button stays in step with the new page
+      document.querySelectorAll('dialog[open]').forEach(d => { try { d.close(); } catch (e) {} });
+      document.documentElement.classList.remove('drawer-open');
+      document.body.className = doc.body.className;
+      const persist = new Set([btn, credit]);
+      [...document.body.childNodes].forEach(n => { if (!persist.has(n)) n.remove(); });
+      const frag = document.createDocumentFragment();
+      [...doc.body.childNodes].forEach(n => { if (n.nodeName !== 'SCRIPT') frag.appendChild(document.importNode(n, true)); });
+      document.body.insertBefore(frag, btn);
+      // fix relative links/images: the new page's paths are relative to its own folder
+      if (base.pathname !== location.pathname) {
+        document.body.querySelectorAll('[href],[src]').forEach(el => {
+          if (persist.has(el) || btn.contains(el)) return;
+          for (const at of ['href', 'src']) {
+            const v = el.getAttribute(at);
+            if (v && !/^(#|[a-z]+:|\/\/)/i.test(v)) el.setAttribute(at, abs(v));
+          }
+        });
+      }
+      if (push) history.pushState({ lumist: 1 }, '', url.href);
+      swapped = true;
+      // restart the page's own scripts (they are written to run again safely)
+      for (const sc of doc.querySelectorAll('script[src]')) {
+        const src = abs(sc.getAttribute('src'));
+        if (RERUN.test(src)) await runScript(src);
+      }
+      if (url.hash) { const t = document.getElementById(decodeURIComponent(url.hash.slice(1))); if (t) t.scrollIntoView(); else scrollTo(0, 0); }
+      else scrollTo(0, 0);
+      const main = document.querySelector('main'); if (main) { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: true }); }
+    } catch (e) {
+      location.href = url.href;          // anything unexpected: fall back to a normal page load
+    } finally { busy = false; }
+  }
+  document.addEventListener('click', e => {
+    if (!on || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest('a[href]'); if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+    const u = new URL(a.getAttribute('href'), location.href);
+    if (!internal(u)) return;
+    if (u.pathname === location.pathname && u.search === location.search && u.hash) return;   // same-page anchor
+    e.preventDefault(); go(u, true);
+  });
+  history.replaceState(Object.assign({}, history.state, { lumist: 1 }), '');
+  addEventListener('popstate', e => { if (swapped || (e.state && e.state.lumist && on)) go(new URL(location.href), false); });
 
   // Keep it quiet in background tabs.
   document.addEventListener('visibilitychange', () => {

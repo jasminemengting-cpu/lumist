@@ -4,6 +4,7 @@
    order or account details are sent anywhere: ordering opens with the first release. */
 (() => {
   'use strict';
+  if (window.__lumistStore) { window.__lumistStore.refresh(); return; }   // page swapped in place: just redraw
   const ME = document.currentScript && document.currentScript.src;
   const ROOT = ME ? new URL('../../../../', ME).href : '/';
   const link = p => ROOT + p;
@@ -97,7 +98,7 @@
   .ls-tabs button[aria-selected="true"]{background:#f1f1f1;color:#212121}
   .ls-done h2{font:400 34px "IM Fell English",Georgia,serif;margin:0 0 8px}
   @media(max-width:820px){.ls-grid{grid-template-columns:1fr}.ls-form .row{grid-template-columns:1fr}}`;
-  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
+  const st = document.createElement('style'); st.textContent = css; st.dataset.lumistKeep = ''; document.head.appendChild(st);
 
   // ---------- shared fragments ----------
   const PREVIEW = '<p class="ls-preview">Preview store: your bag is kept in this browser only. No payment is taken and no order is sent until ordering opens.</p>';
@@ -310,5 +311,12 @@
     if (main) main.innerHTML = '<h1>My bag</h1><div class="page-body"><div id="lumist-cart-page"></div></div>';
   }
 
+  function cartFallback() {
+    if (/\/cart\/?$/.test(location.pathname) && !document.getElementById('lumist-cart-page')) {
+      const main = document.querySelector('main');
+      if (main) main.innerHTML = '<h1>My bag</h1><div class="page-body"><div id="lumist-cart-page"></div></div>';
+    }
+  }
+  window.__lumistStore = { refresh() { cartFallback(); render(); renderMemberPage(); } };
   render(); renderMemberPage();
 })();

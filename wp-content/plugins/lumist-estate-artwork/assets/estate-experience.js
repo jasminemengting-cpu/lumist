@@ -200,6 +200,7 @@
   }
   function tick(now) {
     frame = 0;
+    if (!canvas.isConnected) return;     // the page was swapped: stop this loop
     if (paused || bubblesOff || (!visible && !airCtx) || document.hidden) { previous = 0; return; }
     if (previous) {
       const dt = Math.min((now - previous) / 1000, .05);
