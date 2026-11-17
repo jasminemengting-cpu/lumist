@@ -73,6 +73,7 @@
   .ls-btn.ghost:hover{background:#212121;color:#fff !important}
   .ls-btn[disabled]{opacity:.45;cursor:not-allowed}
   .ls-empty{font-style:italic;color:#555}
+  .ls-fine{font:italic 13px/1.45 "EB Garamond",Georgia,serif;color:#777;margin:10px 0 0}
   .ls-page{max-width:980px;margin:0 auto}
   .ls-steps{display:flex;gap:10px;align-items:center;font:400 15px "IM Fell English SC","IM Fell English",Georgia,serif;letter-spacing:.06em;color:#888;margin:0 0 24px}
   .ls-steps b{color:#212121;font-weight:400;border-bottom:1px solid #212121}
@@ -112,9 +113,10 @@
   function renderDrawer() {
     document.querySelectorAll('#lumist-bag .lumist-bag-content').forEach(box => {
       const n = cart.count();
-      box.innerHTML = PREVIEW + (n ? itemsHTML(true) + subtotal()
+      box.innerHTML = (n ? itemsHTML(true) + subtotal()
         : '<p class="ls-empty">Your bag is empty. Discover a wine through the Journal.</p>')
-        + `<a class="ls-btn" href="${link('cart/')}">See my shopping bag</a>`;
+        + `<a class="ls-btn" href="${link('cart/')}">See my shopping bag</a>`
+        + '<p class="ls-fine">Preview store: your bag is kept in this browser only. No payment is taken and no order is sent until ordering opens.</p>';
     });
   }
   function badge() {
