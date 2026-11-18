@@ -65,6 +65,10 @@
   .ls-item .ls-back{all:unset;cursor:pointer;color:inherit;font:inherit}
   dialog.beside-bag{inset:0 auto 0 auto;left:auto;border-right:1px solid #d6d6d6;box-shadow:-18px 0 40px #0001;animation:lsSlide .28s ease}
   dialog.beside-bag::backdrop{background:transparent}
+  dialog.beside-page{animation:lsSlide .28s ease}
+  dialog.beside-page::backdrop{background:transparent}
+  body{transition:padding-right .28s ease}
+  html.ls-push body{padding-right:var(--ls-push)}
   @keyframes lsSlide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
   .ls-item .ls-back:focus-visible{outline:1px solid #212121;outline-offset:2px}
   .ls-item h3 .ls-back:hover{text-decoration:underline;text-underline-offset:3px}
@@ -321,6 +325,24 @@
         wine.addEventListener('close', () => {
           wine.classList.remove('beside-bag'); wine.style.right = ''; wine.style.width = '';
           if (document.querySelector('dialog[open]')) document.documentElement.classList.add('drawer-open');
+        }, { once: true });
+        return;
+      }
+    }
+    if (about && about.closest('#lumist-cart-page, #lumist-checkout')) {   // on My bag / checkout: page moves aside, nothing is covered
+      const wine = document.getElementById('lumist-wine-' + about.dataset.wine);
+      const w = Math.min(460, innerWidth);
+      if (innerWidth >= w + 640) {
+        e.preventDefault(); e.stopImmediatePropagation(); e.stopPropagation();
+        document.querySelectorAll('dialog[open]').forEach(d => d.close());
+        const root = document.documentElement;
+        root.style.setProperty('--ls-push', w + 'px'); root.classList.add('ls-push');
+        wine.style.width = w + 'px';
+        wine.classList.add('beside-page');
+        wine.showModal();
+        wine.addEventListener('close', () => {
+          wine.classList.remove('beside-page'); wine.style.width = '';
+          root.classList.remove('ls-push');
         }, { once: true });
         return;
       }
