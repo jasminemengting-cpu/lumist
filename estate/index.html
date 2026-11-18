@@ -93,16 +93,17 @@ var woocommerce_params = {"ajax_url":"/wp-admin/admin-ajax.php","wc_ajax_url":"/
 	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
 	<style id="estate-paper-tone">
 /* Estate: a slightly lighter sheet of paper, grain kept */
-body.page-id-17{background-color:#F4F4F4 !important;
-  background-image:url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/paper-old-book.webp?v=8") !important;
-  background-size:1024px 1024px !important;background-repeat:repeat !important;background-blend-mode:multiply}
-/* light and shade across the sheet: brighter where the light falls, worn and darker toward the edges */
-body.page-id-17::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:199;mix-blend-mode:multiply;
-  background:
-    radial-gradient(ellipse 70% 60% at 28% 18%, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 55%, rgba(50,50,50,.04) 100%),
-    radial-gradient(ellipse 120% 90% at 50% 50%, rgba(0,0,0,0) 60%, rgba(40,40,40,.07) 100%),
-    linear-gradient(90deg, rgba(40,40,40,.035), rgba(0,0,0,0) 9%, rgba(0,0,0,0) 91%, rgba(40,40,40,.035))}
-body.page-id-17::after{opacity:.1 !important;filter:grayscale(1)}
+body.page-id-17{background-color:#F3F3F3 !important;
+  background-image:url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/clouds.webp?v=2") !important;
+  background-size:1600px 1600px !important;background-repeat:repeat !important;background-blend-mode:multiply}
+/* low fog drifting slowly across the page, with soft light from above */
+body.page-id-17::before{content:"";position:fixed;inset:-10%;pointer-events:none;z-index:1;
+  background:url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/fog.webp?v=2") 0 0/1800px 1800px repeat,
+             url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/fog.webp?v=2") 600px 300px/1100px 1100px repeat;
+  opacity:.55;animation:lumistFog 160s linear infinite}
+body.page-id-17::after{opacity:0 !important}
+@keyframes lumistFog{from{background-position:0 0,600px 300px}to{background-position:1800px 0,-500px 300px}}
+@media (prefers-reduced-motion:reduce){body.page-id-17::before{animation:none}}
 /* No rules beside the "&" between Sonoma and Napa */
 /* Marsh notes: title on its own line, text below */
 body.page-id-17 #marsh .notes p > strong:first-child{display:block;margin-bottom:.25em}
