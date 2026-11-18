@@ -377,9 +377,9 @@
   function stageName(m) {
     if (m < .9) return 'Winter · last year’s canes, dormant';
     if (m < 1.7) return 'Winter · pruning back to two-bud spurs';
-    if (m < 2.4) return 'Late winter · the vines rest';
-    if (m < 2.9) return 'Early spring · woolly buds swell';
-    if (m < 3.4) return 'Spring · budbreak';
+    if (m < 2.9) return 'Late winter · the vines rest';
+    if (m < 3.4) return 'Early spring · woolly buds swell';
+    if (m < 3.9) return 'Spring · budbreak';
     if (m < 4.8) return 'Spring · shoots climb, flower clusters form';
     if (m < 5.4) return 'Late spring · flowering';
     if (m < 6.0) return 'Early summer · fruit set';
@@ -433,7 +433,7 @@
 
   function drawCluster(c, x, y, side, m, vineDark, alpha, back, key) {
     if (alpha <= .01) return;
-    const form = span(m, 3.3, 4.8);                 // flower cluster forming
+    const form = span(m, 3.8, 4.8);                 // flower cluster forming
     const flower = span(m, 4.8, 5.1) * (1 - span(m, 5.3, 5.6));
     const set = span(m, 5.4, 5.7);
     const swell = span(m, 5.6, 6.9);
@@ -558,14 +558,14 @@
 
     shoots.forEach(sh => {                             // budded spurs: dormant, swelling, green tip
       const mv = m - sh.v.shift;
-      if (mv < 1.4 || mv >= 3.4) return;
-      drawBud(sh, sh.x0, CORD - 1, span(mv, 2.4, 2.9), span(mv, 2.85, 3.3) * (1 - span(mv, 3.2, 3.4)), sh.key + 1);
+      if (mv < 1.9 || mv >= 3.9) return;
+      drawBud(sh, sh.x0, CORD - 1, span(mv, 2.9, 3.4), span(mv, 3.35, 3.8) * (1 - span(mv, 3.7, 3.9)), sh.key + 1);
     });
 
     shoots.forEach(sh => {
       if (m < 1.7 && oldCanes <= 0) return;
       const mv = m - sh.v.shift;
-      const len = m < 1.7 ? sh.L : sh.L * smooth((mv - 3.05) / (sh.v.dark ? 2.75 : 2.5));
+      const len = m < 1.7 ? sh.L : sh.L * smooth((mv - 3.55) / (sh.v.dark ? 2.3 : 2.1));
       if (len < 4) return;
       const alphaShoot = (m < 1.7 ? oldCanes : 1) * (sh.back ? .62 : 1);
       const pts = [];
@@ -581,16 +581,16 @@
         if (nd.s > len) return;
         const [nx, ny] = shootPoint(sh, nd.s);
         const age = clamp01((len - nd.s) / 70);
-        if (nd.tendril && (m >= 3 || m < 1.7)) drawTendril(nd.tendril, nx, ny, -nd.side, m < 1.7 ? 1 : clamp01(age * 1.4), wood > .5, alphaShoot, sh.key + nd.n * 5);
+        if (nd.tendril && (m >= 3.5 || m < 1.7)) drawTendril(nd.tendril, nx, ny, -nd.side, m < 1.7 ? 1 : clamp01(age * 1.4), wood > .5, alphaShoot, sh.key + nd.n * 5);
         if (wood > .5) {                                // nodes on the hardened cane
           ctx.fillStyle = ink(alphaShoot * .5);
           ctx.beginPath(); ctx.ellipse(nx + nd.side * 1.5, ny, 2.6, 1.8, 0, 0, Math.PI * 2); ctx.fill();
         }
-        if (nd.cluster && m >= 3.3 && m < 8.6) {        // clusters opposite the leaf, picked in August
+        if (nd.cluster && m >= 3.8 && m < 8.6) {        // clusters opposite the leaf, picked in August
           const picked = span(m, 7.7 + nd.cluster.delay * .35, 7.95 + nd.cluster.delay * .35);
           later.push(() => drawCluster(nd.cluster, nx, ny, -nd.side, mv, sh.v.dark, (1 - picked) * (sh.back ? .7 : 1), sh.back, sh.key + nd.n * 11));
         }
-        if (m >= 3.0 && m < 11.6) {
+        if (m >= 3.5 && m < 11.6) {
           // leaves open from the tip: small, folded and upright at first, then
           // unfolding, turning outward and expanding at their own pace
           const lage = clamp01((len - nd.s) / nd.mature);
