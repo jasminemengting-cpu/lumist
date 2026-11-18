@@ -101,9 +101,14 @@ body.page-id-17 #marsh .notes p > strong:first-child{display:block;margin-bottom
 body.page-id-17 .vs .mid{border:0 !important;place-items:center !important;align-self:stretch;padding-top:0 !important}
 </style>
 <style id="estate-ramal">
-body.page-id-17 #ramal .ramal-plate{margin:8px 0 34px}
-body.page-id-17 #ramal .ramal-plate img{width:100%;display:block}
-body.page-id-17 #ramal .ramal-plate figcaption{font-style:italic;font-size:14px;color:#6a6a6a;margin-top:6px}
+body.page-id-17 #ramal .ramal-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:8px 0 34px}
+body.page-id-17 #ramal .ramal-photos figure{margin:0}
+body.page-id-17 #ramal .ramal-photos figure.big{grid-column:1/-1}
+body.page-id-17 #ramal .ramal-photos img{width:100%;display:block;aspect-ratio:3/2;object-fit:cover;filter:grayscale(1) contrast(1.06)}
+body.page-id-17 #ramal .ramal-photos figure.big img{aspect-ratio:21/9}
+body.page-id-17 #ramal .ramal-photos figcaption{font-style:italic;font-size:14px;color:#6a6a6a;margin-top:6px}
+body.page-id-17 #ramal .ramal-credit{grid-column:1/-1;margin:0;font-size:13px;color:#6a6a6a}
+@media(max-width:640px){body.page-id-17 #ramal .ramal-photos{grid-template-columns:1fr}}
 body.page-id-17 #ramal .ramal-stories{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0 40px}
 body.page-id-17 #ramal .ramal-stories li{display:grid;grid-template-columns:44px 1fr;gap:0 10px;border-top:1px dashed #b9b9b9;padding:18px 0 22px}
 body.page-id-17 #ramal .rn{font-family:var(--display);font-style:italic;font-size:30px;line-height:1;color:#9a9a9a}
@@ -402,7 +407,13 @@ body.page-id-17 #ramal .ramal-more a{color:inherit;text-underline-offset:3px}
           <p class="intro">Our Sonoma vineyard sits at 23900 Ramal Road, on the western side of Carneros. A few small things we have learned about the place.</p>
         </div>
       </div>
-      <figure class="ramal-plate"><img src="../wp-content/plugins/lumist-estate-artwork/assets/estate-art/09-ramal-station-pencil-transparent.webp?v=2" alt="Pencil drawing of a small railway flag stop with a sign reading Ramal, sheep grazing beside the track" loading="lazy"><figcaption>The old Ramal flag stop, as we imagine it.</figcaption></figure>
+      <div class="ramal-photos">
+        <figure class="big"><img src="../wp-content/uploads/2026/11/ramal-pond.jpg" alt="A pond fringed with reeds and rushes, vineyard rows on the rolling hills beyond" loading="lazy"><figcaption>Reeds, water, and the vineyard on the hills beyond.</figcaption></figure>
+        <figure><img src="../wp-content/uploads/2026/11/ramal-gate-900.jpg" alt="A weathered wooden sign with the number 23900 on the ranch gate" loading="lazy"><figcaption>The gate at 23900 Ramal Road.</figcaption></figure>
+        <figure><img src="../wp-content/uploads/2026/11/ramal-farmhouse-900.jpg" alt="The old wooden farmhouse with a porch and brick chimney" loading="lazy"><figcaption>The farmhouse at the heart of the ranch.</figcaption></figure>
+        <figure><img src="../wp-content/uploads/2026/11/ramal-eucalyptus-900.jpg" alt="A large old eucalyptus beside a pond" loading="lazy"><figcaption>An old eucalyptus by one of the ponds.</figcaption></figure>
+        <p class="ramal-credit">Photographs: LUMIST, at the ranch.</p>
+      </div>
       <ol class="ramal-stories"><li><span class="rn">I</span><div><h3>The rams</h3><p>Long before vines, this was sheep country. Los Carneros means “the rams”, and the name stuck to these low hills by the bay. One of the first vineyards in the area was planted on the Sonoma side in the late 1830s. The sheep moved on. The wind stayed.</p></div></li><li><span class="rn">II</span><div><h3>A station called Branch</h3><p><em>Ramal</em> is Spanish for a branch line, and there was once a small Southern Pacific stop of that name here, with no stationmaster and no ticket office. By the early 1950s no passengers or freight had come through for two years, and in 1953 the railroad took Ramal off its maps. The road still answers to the old name.</p></div></li><li><span class="rn">III</span><div><h3>From the edge of the bay</h3><p>In 1878 a railroad was laid from the edge of the bay up to the town of Sonoma, carrying the valley’s harvests toward the wider world. The track east of Schellville is still in use. Out here, things that work tend to last.</p></div></li><li><span class="rn">IV</span><div><h3>The farmhouse</h3><p>At the heart of the ranch sits a small farmhouse. Records say it was built in 1924, before the vineyard and long before the wine. It has watched pasture turn into rows of vines, one season at a time.</p></div></li><li><span class="rn">V</span><div><h3>Water that comes back</h3><p>Two ponds keep the vines going through the dry summer: one fills with winter rain running off the hills, the other with recycled water from the local sanitation district. Nothing grand, just a quiet way of wasting less.</p></div></li><li><span class="rn">VI</span><div><h3>On a clear day</h3><p>Most mornings the fog sits low over the rows. On a clear day you can see all the way to the San Francisco skyline: a reminder of how close the city is, and how far away it feels.</p></div></li></ol>
       <p class="ramal-more"><a href="../stories-from-ramal-road/">Read the full story in the Journal <span aria-hidden="true">↗</span></a></p>
     </div>
