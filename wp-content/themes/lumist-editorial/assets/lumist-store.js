@@ -63,6 +63,9 @@
   .ls-item img{width:64px;height:82px;object-fit:cover;background:#f3f3f1}
   .ls-item h3{font:400 20px/1.1 "IM Fell English",Georgia,serif;margin:0 0 2px}
   .ls-item .ls-back{all:unset;cursor:pointer;color:inherit;font:inherit}
+  dialog.beside-bag{inset:0 auto 0 auto;left:auto;border-right:1px solid #d6d6d6;box-shadow:-18px 0 40px #0001;animation:lsSlide .28s ease}
+  dialog.beside-bag::backdrop{background:transparent}
+  @keyframes lsSlide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
   .ls-item .ls-back:focus-visible{outline:1px solid #212121;outline-offset:2px}
   .ls-item h3 .ls-back:hover{text-decoration:underline;text-underline-offset:3px}
   .ls-item .ls-pic img{display:block;transition:opacity .2s}.ls-item .ls-pic:hover img{opacity:.8}
@@ -305,6 +308,23 @@
   document.addEventListener('click', e => {
     const about = e.target.closest('.ls-back[data-wine]');
     if (about && !document.getElementById('lumist-wine-' + about.dataset.wine)) { e.preventDefault(); location.href = about.dataset.href; return; }  // no wine panel on this page
+    if (about && about.closest('#lumist-bag')) {           // from the side bag: open the wine beside it, bag stays visible
+      const bagEl = document.getElementById('lumist-bag'), wine = document.getElementById('lumist-wine-' + about.dataset.wine);
+      const w = bagEl.getBoundingClientRect().width;
+      if (bagEl.open && innerWidth >= w + 360) {
+        e.preventDefault(); e.stopImmediatePropagation(); e.stopPropagation();
+        document.querySelectorAll('dialog.beside-bag[open]').forEach(d => d.close());
+        wine.style.right = w + 'px';
+        wine.style.width = Math.min(460, innerWidth - w) + 'px';
+        wine.classList.add('beside-bag');
+        wine.showModal();
+        wine.addEventListener('close', () => {
+          wine.classList.remove('beside-bag'); wine.style.right = ''; wine.style.width = '';
+          if (document.querySelector('dialog[open]')) document.documentElement.classList.add('drawer-open');
+        }, { once: true });
+        return;
+      }
+    }
     const bag = e.target.closest('[data-lumist-bag]');
     if (bag) { e.preventDefault(); e.stopPropagation(); openBag(); return; }
     const inc = e.target.closest('[data-ls-inc]'), dec = e.target.closest('[data-ls-dec]'), rem = e.target.closest('[data-ls-remove]');
