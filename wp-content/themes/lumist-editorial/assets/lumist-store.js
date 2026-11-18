@@ -10,10 +10,10 @@
   const link = p => ROOT + p;
   const PRICE = 180;
   const PRODUCTS = {
-    58: { name: 'Spring 2024', note: 'Spring · Easy', grapes: '68% Chardonnay, 32% Pinot Noir', img: 'lumist-spring-placeholder.png' },
-    60: { name: 'Summer 2024', note: 'Summer · Carefree', grapes: '100% Pinot Noir', img: 'lumist-summer-placeholder.png' },
-    62: { name: 'Autumn 2024', note: 'Autumn · Poised', grapes: '100% Chardonnay', img: 'lumist-autumn-placeholder.png' },
-    64: { name: 'Winter 2024', note: 'Winter · Depth', grapes: '100% Chardonnay', img: 'lumist-winter-placeholder.png' },
+    58: { name: 'Spring 2024', note: 'Easy', grapes: '68% Chardonnay, 32% Pinot Noir', img: 'lumist-spring-placeholder.png' },
+    60: { name: 'Summer 2024', note: 'Carefree', grapes: '100% Pinot Noir', img: 'lumist-summer-placeholder.png' },
+    62: { name: 'Autumn 2024', note: 'Poised', grapes: '100% Chardonnay', img: 'lumist-autumn-placeholder.png' },
+    64: { name: 'Winter 2024', note: 'Depth', grapes: '100% Chardonnay', img: 'lumist-winter-placeholder.png' },
   };
   // Where each wine is featured in the Journal: used when we don't know where it was added.
   const HOME_STORY = { 58: 'no-special-occasion/', 60: 'quiet-neighbours/', 62: 'a-different-kind-of-attention/', 64: 'the-space-between-notes/' };
