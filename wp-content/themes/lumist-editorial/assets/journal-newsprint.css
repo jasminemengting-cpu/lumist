@@ -8,7 +8,8 @@ body.newsprint{
   background:var(--np-paper) !important; color:var(--np-ink);
 }
 html:has(body.newsprint){background:#ecebe6}
-body.newsprint :is(header,.site-header,.prototype-header):not(main *){background:var(--np-paper) !important}
+/* the top bar (LUMIST, Discover, account, bag) always stays white */
+body.newsprint .site-header{background:#fff !important;position:sticky;top:0;z-index:2147483001}
 /* paper fibres and uneven printing, laid over the whole page */
 body.newsprint::before{
   content:""; position:fixed; inset:0; pointer-events:none; z-index:2147483000;
