@@ -345,7 +345,7 @@
   // While the sound is on, links inside the site swap the page in place instead of
   // reloading it, so the audio never stops. The address bar, Back and Forward work as usual.
   const SITE = ME ? new URL('../../../../', ME).href : location.origin + '/';
-  const RERUN = /(site|commerce|estate-experience|estate-harvest|estate-vines|lumist-store)\.js(\?|$)/;
+  const RERUN = /(site|commerce|estate-experience|estate-harvest|estate-vines|journal-newsprint|lumist-store)\.js(\?|$)/;
   let swapped = false, busy = false;
   function internal(u) {
     return u.origin === location.origin && u.href.startsWith(SITE)
