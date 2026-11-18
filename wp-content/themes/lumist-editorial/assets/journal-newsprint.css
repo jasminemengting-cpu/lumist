@@ -61,9 +61,8 @@ body.newsprint .essay :is(hr){border:0;border-top:1px solid var(--np-rule)}
 body.newsprint .essay *{border-radius:0 !important;box-shadow:none !important}
 body.newsprint .essay [style*="background:linear-gradient"]{filter:grayscale(1) contrast(1.1)}
 
-/* ---------- the wine at the end: set like a period advertisement ---------- */
+/* ---------- the wine at the end: set in a double-ruled box ---------- */
 body.newsprint .essay-wine{border:3px double var(--np-rule) !important;padding:22px 24px 18px !important;position:relative;background:transparent}
-body.newsprint .essay-wine::before{content:"Advertisement";position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--np-paper);padding:0 10px;font-family:"IM Fell English SC","IM Fell English",Georgia,serif;letter-spacing:.14em;font-size:12px;color:var(--np-grey)}
 body.newsprint .essay-wine .journal-wine-photo img{filter:grayscale(1) contrast(1.08)}
 body.newsprint .essay-wine h2{font-family:"IM Fell English",Georgia,serif;font-size:34px}
 body.newsprint .article-end{border-top:3px double var(--np-rule)}
