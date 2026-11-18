@@ -15,6 +15,11 @@
     62: { name: 'Autumn 2024', note: 'Autumn · Poised', grapes: '100% Chardonnay', img: 'lumist-autumn-placeholder.png' },
     64: { name: 'Winter 2024', note: 'Winter · Depth', grapes: '100% Chardonnay', img: 'lumist-winter-placeholder.png' },
   };
+  // Where each wine is featured in the Journal: used when we don't know where it was added.
+  const HOME_STORY = { 58: 'no-special-occasion/', 60: 'quiet-neighbours/', 62: 'a-different-kind-of-attention/', 64: 'the-space-between-notes/' };
+  // Only pages on this site, never the cart or checkout themselves.
+  const here = () => { const u = new URL(location.href); u.hash = ''; u.search = ''; return u.href.startsWith(ROOT) && !/\/(cart|checkout|myaccount)\//.test(u.pathname) ? u.href : null; };
+  const backTo = i => (i.from && String(i.from).startsWith(ROOT)) ? i.from : link(HOME_STORY[i.id] || 'journal/');
   const imgSrc = p => link('wp-content/uploads/2026/11/' + p.img + '?v=black');
   const money = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -27,7 +32,7 @@
   const cart = {
     items() { return store.get('lumist-cart', []).filter(i => PRODUCTS[i.id] && i.qty > 0); },
     save(items) { store.set('lumist-cart', items); render(); },
-    add(id, qty) { const it = cart.items(); const f = it.find(i => i.id === id); if (f) f.qty += qty; else it.push({ id, qty }); cart.save(it); },
+    add(id, qty, from) { const it = cart.items(); const f = it.find(i => i.id === id); if (f) { f.qty += qty; if (from) f.from = from; } else it.push(from ? { id, qty, from } : { id, qty }); cart.save(it); },
     setQty(id, qty) { cart.save(cart.items().map(i => i.id === id ? { ...i, qty: Math.max(0, Math.min(99, qty)) } : i).filter(i => i.qty > 0)); },
     remove(id) { cart.save(cart.items().filter(i => i.id !== id)); },
     clear() { cart.save([]); },
@@ -57,6 +62,9 @@
   .ls-item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #e1e1e1}
   .ls-item img{width:64px;height:82px;object-fit:cover;background:#f3f3f1}
   .ls-item h3{font:400 20px/1.1 "IM Fell English",Georgia,serif;margin:0 0 2px}
+  .ls-item a.ls-back{color:inherit;text-decoration:none}
+  .ls-item h3 a.ls-back:hover{text-decoration:underline;text-underline-offset:3px}
+  .ls-item a.ls-back img{display:block;transition:opacity .2s}.ls-item a.ls-back:hover img{opacity:.8}
   .ls-item small{display:block;color:#666;font-size:14px}
   .ls-qty{display:inline-flex;align-items:center;border:1px solid #212121;margin-top:6px}
   .ls-qty button{border:0;background:transparent;width:28px;height:28px;font-size:16px;cursor:pointer;color:#212121}
@@ -105,8 +113,9 @@
   function itemsHTML(editable) {
     return '<ul class="ls-items">' + cart.items().map(i => {
       const p = PRODUCTS[i.id];
-      return `<li class="ls-item"><img src="${imgSrc(p)}" alt="">
-        <div><h3>${p.name}</h3><small>${p.note} · ${p.grapes}</small><small>${money(PRICE)} per bottle</small>
+      const href = esc(backTo(i));
+      return `<li class="ls-item"><a class="ls-back" href="${href}" tabindex="-1" aria-hidden="true"><img src="${imgSrc(p)}" alt=""></a>
+        <div><h3><a class="ls-back" href="${href}" title="Back to where you found ${p.name}">${p.name}</a></h3><small>${p.note} · ${p.grapes}</small><small>${money(PRICE)} per bottle</small>
         ${editable ? `<span class="ls-qty" role="group" aria-label="Quantity of ${p.name}"><button type="button" data-ls-dec="${i.id}" aria-label="One fewer">−</button><span aria-live="polite">${i.qty}</span><button type="button" data-ls-inc="${i.id}" aria-label="One more">+</button></span>` : `<small>Qty ${i.qty}</small>`}</div>
         <div class="ls-line">${money(i.qty * PRICE)}${editable ? `<button type="button" class="ls-remove" data-ls-remove="${i.id}">Remove</button>` : ''}</div></li>`;
     }).join('') + '</ul>';
@@ -288,7 +297,7 @@
     e.preventDefault(); e.stopImmediatePropagation(); e.stopPropagation();
     const id = Number(form.querySelector('[name="product_id"]').value), qty = Math.max(1, Number(form.querySelector('[name="quantity"]')?.value) || 1);
     if (!PRODUCTS[id]) return;
-    cart.add(id, qty);
+    cart.add(id, qty, here());
     const fb = form.parentElement.querySelector('.cart-feedback'); if (fb) fb.textContent = `Added ${qty} × ${PRODUCTS[id].name} to your bag.`;
     openBag();
   }, true);
