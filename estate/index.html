@@ -93,17 +93,8 @@ var woocommerce_params = {"ajax_url":"/wp-admin/admin-ajax.php","wc_ajax_url":"/
 	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
 	<style id="estate-paper-tone">
 /* Estate: a slightly lighter sheet of paper, grain kept */
-body.page-id-17{background-color:#F3F3F3 !important;
-  background-image:url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/clouds.webp?v=2") !important;
-  background-size:1600px 1600px !important;background-repeat:repeat !important;background-blend-mode:multiply}
-/* low fog drifting slowly across the page, with soft light from above */
-body.page-id-17::before{content:"";position:fixed;inset:-10%;pointer-events:none;z-index:1;
-  background:url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/fog.webp?v=2") 0 0/1800px 1800px repeat,
-             url("../wp-content/plugins/lumist-estate-artwork/assets/estate-art/fog.webp?v=2") 600px 300px/1100px 1100px repeat;
-  opacity:.55;animation:lumistFog 160s linear infinite}
-body.page-id-17::after{opacity:0 !important}
-@keyframes lumistFog{from{background-position:0 0,600px 300px}to{background-position:1800px 0,-500px 300px}}
-@media (prefers-reduced-motion:reduce){body.page-id-17::before{animation:none}}
+body.page-id-17{background-color:#F2F2F2 !important}
+body.page-id-17::after{opacity:.27 !important}
 /* No rules beside the "&" between Sonoma and Napa */
 /* Marsh notes: title on its own line, text below */
 body.page-id-17 #marsh .notes p > strong:first-child{display:block;margin-bottom:.25em}
