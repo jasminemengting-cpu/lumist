@@ -2,7 +2,7 @@
 .gallery-page{max-width:1180px;margin:0 auto;padding:56px 24px 96px}
 .gallery-page .g-kick{font-family:"IM Fell English SC","IM Fell English",Georgia,serif;letter-spacing:.1em;color:#5f5f5f;font-size:15px;margin:0}
 .gallery-page h1{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:clamp(52px,7vw,96px);line-height:1;margin:8px 0 14px}
-.gallery-page .g-dek{font-size:20px;max-width:34em;color:#424242;margin:0 0 54px}
+.gallery-page .g-dek{font-size:16px;line-height:1.6;max-width:36em;color:#424242;margin:0 0 54px}
 
 /* the shelf */
 .g-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:54px 40px;align-items:end;padding-bottom:22px;border-bottom:10px solid #2a2a28;box-shadow:0 14px 18px -12px #0004;position:relative}
