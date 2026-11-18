@@ -29,3 +29,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}img{max-width:10
 @media (prefers-reduced-motion:reduce){.entry .im img{transition:none}}
 @media (max-width:900px){.entries{grid-template-columns:1fr 1fr}}
 @media (max-width:540px){.entries{grid-template-columns:1fr}}
+
+/* Photographer credits: small and quiet, everywhere */
+.pc,.ph-credit,.ramal-credit,.credits{font-size:10.5px !important;line-height:1.4 !important;letter-spacing:.03em !important;font-style:normal !important;opacity:.55;color:inherit}
+.pc a,.ph-credit a,.credits a{color:inherit !important;text-decoration:none !important}
+.pc a:hover,.ph-credit a:hover,.credits a:hover{text-decoration:underline !important}
+figcaption > .pc:only-child, p.credit > .pc:only-child{display:inline-block}
