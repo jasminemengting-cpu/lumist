@@ -62,9 +62,10 @@
   .ls-item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #e1e1e1}
   .ls-item img{width:64px;height:82px;object-fit:cover;background:#f3f3f1}
   .ls-item h3{font:400 20px/1.1 "IM Fell English",Georgia,serif;margin:0 0 2px}
-  .ls-item a.ls-back{color:inherit;text-decoration:none}
-  .ls-item h3 a.ls-back:hover{text-decoration:underline;text-underline-offset:3px}
-  .ls-item a.ls-back img{display:block;transition:opacity .2s}.ls-item a.ls-back:hover img{opacity:.8}
+  .ls-item .ls-back{all:unset;cursor:pointer;color:inherit;font:inherit}
+  .ls-item .ls-back:focus-visible{outline:1px solid #212121;outline-offset:2px}
+  .ls-item h3 .ls-back:hover{text-decoration:underline;text-underline-offset:3px}
+  .ls-item .ls-pic img{display:block;transition:opacity .2s}.ls-item .ls-pic:hover img{opacity:.8}
   .ls-item small{display:block;color:#666;font-size:14px}
   .ls-qty{display:inline-flex;align-items:center;border:1px solid #212121;margin-top:6px}
   .ls-qty button{border:0;background:transparent;width:28px;height:28px;font-size:16px;cursor:pointer;color:#212121}
@@ -114,8 +115,8 @@
     return '<ul class="ls-items">' + cart.items().map(i => {
       const p = PRODUCTS[i.id];
       const href = esc(backTo(i));
-      return `<li class="ls-item"><a class="ls-back" href="${href}" tabindex="-1" aria-hidden="true"><img src="${imgSrc(p)}" alt=""></a>
-        <div><h3><a class="ls-back" href="${href}" title="Back to where you found ${p.name}">${p.name}</a></h3><small>${p.note} · ${p.grapes}</small><small>${money(PRICE)} per bottle</small>
+      return `<li class="ls-item"><button type="button" class="ls-back ls-pic" data-wine="${i.id}" data-href="${href}" tabindex="-1" aria-hidden="true"><img src="${imgSrc(p)}" alt=""></button>
+        <div><h3><button type="button" class="ls-back" data-wine="${i.id}" data-href="${href}" aria-label="About ${p.name}">${p.name}</button></h3><small>${p.note} · ${p.grapes}</small><small>${money(PRICE)} per bottle</small>
         ${editable ? `<span class="ls-qty" role="group" aria-label="Quantity of ${p.name}"><button type="button" data-ls-dec="${i.id}" aria-label="One fewer">−</button><span aria-live="polite">${i.qty}</span><button type="button" data-ls-inc="${i.id}" aria-label="One more">+</button></span>` : `<small>Qty ${i.qty}</small>`}</div>
         <div class="ls-line">${money(i.qty * PRICE)}${editable ? `<button type="button" class="ls-remove" data-ls-remove="${i.id}">Remove</button>` : ''}</div></li>`;
     }).join('') + '</ul>';
@@ -302,6 +303,8 @@
     openBag();
   }, true);
   document.addEventListener('click', e => {
+    const about = e.target.closest('.ls-back[data-wine]');
+    if (about && !document.getElementById('lumist-wine-' + about.dataset.wine)) { e.preventDefault(); location.href = about.dataset.href; return; }  // no wine panel on this page
     const bag = e.target.closest('[data-lumist-bag]');
     if (bag) { e.preventDefault(); e.stopPropagation(); openBag(); return; }
     const inc = e.target.closest('[data-ls-inc]'), dec = e.target.closest('[data-ls-dec]'), rem = e.target.closest('[data-ls-remove]');
