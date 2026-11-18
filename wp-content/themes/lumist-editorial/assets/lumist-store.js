@@ -11,7 +11,7 @@
   const PRICE = 180;
   const PRODUCTS = {
     58: { name: 'Spring 2024', note: 'Spring · Easy', grapes: '68% Chardonnay, 32% Pinot Noir', img: 'lumist-spring-placeholder.png' },
-    60: { name: 'Summer 2024', note: 'Summer · Carefree', grapes: '100% Pinot Noir', img: 'lumist-summer-placeholder.png' },
+    60: { name: 'Summer 2024', note: 'Summer · Connection', grapes: '100% Pinot Noir', img: 'lumist-summer-placeholder.png' },
     62: { name: 'Autumn 2024', note: 'Autumn · Poised', grapes: '100% Chardonnay', img: 'lumist-autumn-placeholder.png' },
     64: { name: 'Winter 2024', note: 'Winter · Depth', grapes: '100% Chardonnay', img: 'lumist-winter-placeholder.png' },
   };
