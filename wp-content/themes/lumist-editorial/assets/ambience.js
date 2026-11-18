@@ -408,7 +408,7 @@
       }
       if (url.hash) { const t = document.getElementById(decodeURIComponent(url.hash.slice(1))); if (t) t.scrollIntoView(); else scrollTo(0, 0); }
       else scrollTo(0, 0);
-      const main = document.querySelector('main'); if (main) { main.setAttribute('tabindex', '-1'); main.focus({ preventScroll: true }); }
+      const main = document.querySelector('main'); if (main) { main.setAttribute('tabindex', '-1'); main.style.outline = 'none'; main.focus({ preventScroll: true, focusVisible: false }); }
     } catch (e) {
       location.href = url.href;          // anything unexpected: fall back to a normal page load
     } finally { busy = false; }
