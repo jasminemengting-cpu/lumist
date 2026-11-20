@@ -35,3 +35,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}img{max-width:10
 .pc a,.ph-credit a,.credits a{color:inherit !important;text-decoration:none !important}
 .pc a:hover,.ph-credit a:hover,.credits a:hover{text-decoration:underline !important}
 figcaption > .pc:only-child, p.credit > .pc:only-child{display:inline-block}
+
+/* Brand wordmark (image logo) */
+a.logo{display:block;width:150px;height:19px;margin-right:0;letter-spacing:0;font-size:0;line-height:0;color:transparent;background:#212121;-webkit-mask:url(images/lumist-logo.png?v=1) center/contain no-repeat;mask:url(images/lumist-logo.png?v=1) center/contain no-repeat}
+a.logo:hover{text-decoration:none;opacity:.75}
+@media (max-width:480px){a.logo{width:116px;height:15px}}
